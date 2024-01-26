@@ -16,52 +16,10 @@
                 <li data-name="Storage" class="layui-nav-item">
                     <a layui-href="javascript:;" lay-tips="订单" lay-direction="2">
                         <i class="layui-icon iconfont icon-dingdan1"></i>
-                        <cite>尾程</cite>
+                        <cite>登记中心</cite>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a layui-href="{:url('Order/index')}">尾程费用</a></dd>
-                    </dl>
-                </li>
-                <li data-name="Storage" class="layui-nav-item">
-                    <a layui-href="javascript:;" lay-tips="仓储" lay-direction="2">
-                        <i class="layui-icon iconfont icon-kucunchaxun"></i>
-                        <cite>仓储</cite>
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a layui-href="{:url('Inventory/index')}">易仓仓储费</a></dd>
-<!--                        <dd><a layui-href="{:url('Inventory/adjustment')}">易仓库存调整记录</a></dd>-->
-                        <dd><a layui-href="{:url('LcInventory/index')}">良仓仓储费</a></dd>
-                        <dd><a layui-href="{:url('LeInventory/index')}">乐歌仓储费</a></dd>
-                    </dl>
-                </li>
-                <li data-name="Storage" class="layui-nav-item">
-                    <a layui-href="javascript:;" lay-tips="库存" lay-direction="2">
-                        <i class="layui-icon iconfont icon-kucun"></i>
-                        <cite>库存</cite>
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a layui-href="{:url('DateStock/index')}">库存统计</a></dd>
-                    </dl>
-                </li>
-                <li data-name="Storage" class="layui-nav-item">
-                    <a layui-href="javascript:;" lay-tips="财务" lay-direction="2">
-                        <i class="layui-icon iconfont icon-caiwu1"></i>
-                        <cite>财务</cite>
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a layui-href="{:url('Finance/index')}">原始订单列表</a></dd>
-                        <dd><a layui-href="{:url('Finance/outbound')}">出库明细列表</a></dd>
-                    </dl>
-                </li>
-                <li data-name="Storage" class="layui-nav-item">
-                    <a layui-href="javascript:;" lay-tips="产品" lay-direction="2">
-                        <i class="layui-icon iconfont icon-chanpin2"></i>
-                        <cite>产品</cite>
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a layui-href="{:url('Product/index')}">易仓产品列表</a></dd>
-                        <dd><a layui-href="{:url('Product/lc')}">良仓产品列表</a></dd>
-                        <dd><a layui-href="{:url('Product/le')}">乐歌产品列表</a></dd>
+                        <dd><a layui-href="{:url('WarehouseClaimant/index')}">海外仓索赔</a></dd>
                     </dl>
                 </li>
                 <li data-name="Storage" class="layui-nav-item">
@@ -70,13 +28,7 @@
                         <cite>基础</cite>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a layui-href="{:url('Storage/index')}">基础仓库</a></dd>
-                        <dd><a layui-href="{:url('StorageArea/index')}">常用仓库</a></dd>
-                        <dd><a layui-href="{:url('StorageZone/index')}">邮编Zone</a></dd>
-                        <dd><a layui-href="{:url('StorageOutbound/index')}">出库费用</a></dd>
-                        <dd><a layui-href="{:url('StorageBase/index')}">基础费用</a></dd>
-                        <dd><a layui-href="{:url('StorageAhs/index')}">AHS费用</a></dd>
-                        <dd><a layui-href="{:url('StorageDas/index')}">偏远地区</a></dd>
+                        <dd><a layui-href="{:url('Warehouse/index')}">基础仓库</a></dd>
                     </dl>
                 </li>
                 <li data-name="Site" class="layui-nav-item">

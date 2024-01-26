@@ -218,25 +218,7 @@ function getWarehouseID(): array
 /**
  * @throws DbException
  */
-function getStorage()
+function getWarehouse()
 {
-    return \app\Manage\model\StorageModel::all(['state' => \app\Manage\model\StorageModel::STATE_ACTIVE]);
-}
-
-// 获取所有子仓库数据
-/**
- * @throws DbException
- */
-function getStorageArea()
-{
-    return \app\Manage\model\StorageAreaModel::all(['state' => \app\Manage\model\StorageAreaModel::STATE_ACTIVE]);
-}
-
-// 获取AHS规则
-/**
- * @throws DbException
- */
-function getAhs()
-{
-    return \app\Manage\model\StorageAhsModel::all();
+    return \app\Manage\model\WarehouseModel::all(['state' => \app\Manage\model\WarehouseModel::STATE_ACTIVE]);
 }
