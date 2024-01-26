@@ -22,6 +22,7 @@
                         <dd><a layui-href="{:url('WarehouseClaimant/index')}">海外仓索赔</a></dd>
                     </dl>
                 </li>
+                {if condition="$user.super eq 1"}
                 <li data-name="Storage" class="layui-nav-item">
                     <a layui-href="javascript:;" lay-tips="仓库" lay-direction="2">
                         <i class="layui-icon iconfont icon-jichugongneng"></i>
@@ -53,6 +54,7 @@
                         {/if}
                     </dl>
                 </li>
+                {/if}
             </ul>
         </div>
     </div>

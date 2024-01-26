@@ -101,6 +101,10 @@ class WarehouseClaimantController extends BaseController
             exit;
         } else {
             $info = WarehouseClaimantModel::get(['id' => $id,]);
+            if ($info['admin_id'] != Session::get(Config::get('USER_LOGIN_FLAG'))) {
+                $this->error('你没有编辑权限！', url('index'));
+            }
+
             $this->assign('info', $info);
             $this->assign('warehouse', getWarehouse());
 
