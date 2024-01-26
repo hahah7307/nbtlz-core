@@ -2,6 +2,7 @@
 namespace app\Manage\controller;
 
 use app\Manage\model\AccountModel;
+use app\Manage\model\WarehouseClaimantLogModel;
 use app\Manage\model\WarehouseClaimantModel;
 use app\Manage\validate\WarehouseClaimantValidate;
 use think\exception\DbException;
@@ -47,6 +48,13 @@ class WarehouseClaimantController extends BaseController
             if ($dataValidate->scene('add')->check($post)) {
                 $model = new WarehouseClaimantModel();
                 if ($model->allowField(true)->save($post)) {
+                    $logObj = new WarehouseClaimantLogModel();
+                    $log = [
+                        'cid'       =>  $model->getLastInsID(),
+                        'tag'       =>  'add',
+                        'content'   =>  json_encode($post)
+                    ];
+                    $logObj->save($log);
                     echo json_encode(['code' => 1, 'msg' => '添加成功']);
                 } else {
                     echo json_encode(['code' => 0, 'msg' => '添加失败，请重试']);
@@ -75,16 +83,22 @@ class WarehouseClaimantController extends BaseController
             if ($dataValidate->scene('edit')->check($post)) {
                 $model = new WarehouseClaimantModel();
                 if ($model->allowField(true)->save($post, ['id' => $id])) {
+                    $post['cid'] = $id;
+                    $logObj = new WarehouseClaimantLogModel();
+                    $log = [
+                        'cid'       =>  $id,
+                        'tag'       =>  'edit',
+                        'content'   =>  json_encode($post)
+                    ];
+                    $logObj->save($log);
                     echo json_encode(['code' => 1, 'msg' => '修改成功']);
-                    exit;
                 } else {
                     echo json_encode(['code' => 0, 'msg' => '修改失败，请重试']);
-                    exit;
                 }
             } else {
                 echo json_encode(['code' => 0, 'msg' => $dataValidate->getError()]);
-                exit;
             }
+            exit;
         } else {
             $info = WarehouseClaimantModel::get(['id' => $id,]);
             $this->assign('info', $info);

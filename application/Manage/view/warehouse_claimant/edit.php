@@ -5,7 +5,7 @@
 <div class="layui-body" id="LAY_app_body">
     <div class="right">
 		<a href="{:url('index')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
-        <div class="title">仓库编辑</div>
+        <div class="title">编辑海外仓索赔</div>
 		<div class="layui-form">
             <div class="layui-form-item">
                 <label class="layui-form-label">所属仓库</label>
@@ -50,6 +50,19 @@
                 <label class="layui-form-label">索赔金额</label>
                 <div class="layui-input-inline w300">
                     <input type="text" class="layui-input" name="claimant_amount" value="{$info.claimant_amount}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">到账金额</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="received_amount" value="{$info.received_amount}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">当前状态</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="state" value="0" title="未完成" {if condition="$info.state eq 0"}checked{/if}>
+                    <input type="radio" name="state" value="1" title="已完成" {if condition="$info.state eq 1"}checked{/if}>
                 </div>
             </div>
 			<div class="layui-form-item">

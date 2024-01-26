@@ -28,10 +28,12 @@
                     <col>
                     <col>
                     <col>
+                    <col>
                     {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <col>
                     {/if}
-                    <col width="250">
+                    <col>
+                    <col width="150">
                 </colgroup>
                 <thead>
                 <tr>
@@ -39,12 +41,14 @@
                     <th>跟踪号</th>
                     <th>订单号</th>
                     <th>仓库SKU</th>
-                    <th>索赔金额</th>
-                    <th>索赔类型</th>
+                    <th class="tc">索赔金额</th>
+                    <th class="tc">到账金额</th>
+                    <th class="tc">索赔类型</th>
                     <th>所属仓库</th>
                     {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <th>索赔人</th>
                     {/if}
+                    <th class="tc">状态</th>
                     <th class="tc">操作</th>
                 </tr>
                 </thead>
@@ -55,8 +59,9 @@
                     <td>{$v.shipping_method_no}</td>
                     <td>{$v.reference_no}</td>
                     <td>{$v.product_sku}</td>
-                    <td>{$v.claimant_amount}</td>
-                    <td>
+                    <td class="tr">{$v.claimant_amount}</td>
+                    <td class="tr">{$v.received_amount}</td>
+                    <td class="tc">
                         {if condition="$v.claimant_type eq 1"}
                             库内丢失
                         {elseif condition="$v.claimant_type eq 2"/}
@@ -71,6 +76,13 @@
                     {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <td>{$v.admin.nickname}</td>
                     {/if}
+                    <td class="tc">
+                        {if condition="$v.state eq 1"}
+                        <span class="green">已完成</span>
+                        {else/}
+                        <span class="red">未完成</span>
+                        {/if}
+                    </td>
                     <td class="tc">
                         <a href="{:url('edit', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">编辑</a>
                         <button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-danger ml0" lay-submit lay-filter="Detele">删除</button>
