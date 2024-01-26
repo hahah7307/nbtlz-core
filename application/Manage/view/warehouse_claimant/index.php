@@ -28,7 +28,9 @@
                     <col>
                     <col>
                     <col>
+                    {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <col>
+                    {/if}
                     <col width="250">
                 </colgroup>
                 <thead>
@@ -40,7 +42,9 @@
                     <th>索赔金额</th>
                     <th>索赔类型</th>
                     <th>所属仓库</th>
+                    {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <th>索赔人</th>
+                    {/if}
                     <th class="tc">操作</th>
                 </tr>
                 </thead>
@@ -64,7 +68,9 @@
                         {/if}
                     </td>
                     <td>{$v.warehouse.name}</td>
+                    {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <td>{$v.admin.nickname}</td>
+                    {/if}
                     <td class="tc">
                         <a href="{:url('edit', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">编辑</a>
                         <button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-danger ml0" lay-submit lay-filter="Detele">删除</button>

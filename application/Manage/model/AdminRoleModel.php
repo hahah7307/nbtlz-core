@@ -13,12 +13,12 @@ class AdminRoleModel extends Model
 
     protected $resultSetType = 'collection';
 
-    public function access()
+    public function access(): \think\model\relation\HasMany
     {
         return $this->hasMany('AdminAccessModel', 'role_id', 'id');
     }
 
-    public function accessLevel()
+    public function accessLevel(): \think\model\relation\HasMany
     {
         return $this->hasMany('AdminAccessModel', 'role_id', 'id')->where(['level' => 3]);
     }

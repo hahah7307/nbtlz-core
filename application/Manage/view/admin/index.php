@@ -24,6 +24,8 @@
 					<col>
 					<col>
 					<col>
+					<col>
+					<col width="80">
 					<col width="80">
 					<col width="180">
 				</colgroup>
@@ -32,6 +34,8 @@
 						<th>昵称</th>
 						<th>手机号</th>
 						<th>邮箱</th>
+						<th>所在组</th>
+						<th class="tc">经理</th>
 						<th class="tc">状态</th>
 						<th class="tc">操作</th>
 					</tr> 
@@ -42,6 +46,10 @@
 							<td>{$v.nickname}</td>
 							<td>{$v.phone}</td>
 							<td>{$v.email}</td>
+							<td>{$v.user_role.0.role.name}</td>
+                            <td class="tc">
+                                <input type="checkbox" class="h30" name="manage" value="{$v.id}" lay-skin="switch" lay-text="是|否" lay-filter="formManage" {if condition="$v.manage eq 1"}checked{/if}>
+                            </td>
 							<td class="tc">
 								<input type="checkbox" class="h30" name="look" value="{$v.id}" lay-skin="switch" lay-text="是|否" lay-filter="formLock" {if condition="$v.status eq 1"}checked{/if}>
 							</td>
@@ -63,6 +71,21 @@
 layui.use(['form', 'jquery'], function(){
 	var $ = layui.jquery,
 		form = layui.form;
+
+    // 经理
+    form.on('switch(formManage)', function(data){
+        $('button').attr('disabled',true);
+        $.ajax({
+            type:'POST',url:"{:url('user_manage')}",data:{id:data.value,type:'manage'},dataType:'json',
+            success:function(data){
+                if(data.code == 0){
+                    layer.alert(data.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
+                        location.reload();
+                    });
+                }
+            }
+        });
+    });
 
 	// 状态
 	form.on('switch(formLock)', function(data){

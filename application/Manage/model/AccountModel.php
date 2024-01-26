@@ -2,6 +2,8 @@
 
 namespace app\Manage\model;
 
+use think\Config;
+use think\exception\DbException;
 use think\Model;
 use think\Session;
 
@@ -17,23 +19,23 @@ class AccountModel extends Model
 
     protected $update = ['updated_at'];
 
-    protected function setCreatedAtAttr()
+    protected function setCreatedAtAttr(): int
     {
         return time();
     }
 
-    protected function setUpdatedAtAttr()
+    protected function setUpdatedAtAttr(): int
     {
         return time();
     }
 
-    public function userRole()
+    public function userRole(): \think\model\relation\HasMany
     {
         return $this->hasMany('AdminUserRoleModel', 'user_id', 'id');
     }
 
     // 获取用户的所有权限
-    static public function account_access($id)
+    static public function account_access($id): array
     {
         $access = self::with(['userRole.role.accessLevel.adminNode.parentNode'])->where(['status' => self::STATUS_ACTIVE, 'id' => $id])->find();
         $accessList = array();
@@ -46,7 +48,7 @@ class AccountModel extends Model
     }
 
     // 验证用户权限
-    static public function action_access($controller, $action, $access, $user)
+    static public function action_access($controller, $action, $access, $user): bool
     {
         if ($user['super'] == 1) {
             return true;
@@ -64,6 +66,24 @@ class AccountModel extends Model
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * @throws DbException
+     */
+    static public function account_access_ids()
+    {
+        $accountOnj = new AccountModel();
+        $account = $accountOnj->where(['id' => Session::get(Config::get('USER_LOGIN_FLAG'))])->find();
+        if ($account['super'] == 1) {
+            return $accountOnj->column('id');
+        } elseif ($account['manage'] == 1) {
+            $userRoleObj = new AdminUserRoleModel();
+            $userRole = $userRoleObj->where(['user_id' => $account['id']])->find();
+            return $userRoleObj->where(['role_id' => $userRole['role_id']])->column('user_id');
+        } else {
+            return [$account['id']];
         }
     }
 }

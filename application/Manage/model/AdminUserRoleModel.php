@@ -18,7 +18,7 @@ class AdminUserRoleModel extends Model
     //     return $this->hasMany('AdminAccessModel', 'role_id', 'id');
     // }
 
-    public function role()
+    public function role(): \think\model\relation\HasOne
     {
         return $this->hasOne('AdminRoleModel', 'id', 'role_id');
     }

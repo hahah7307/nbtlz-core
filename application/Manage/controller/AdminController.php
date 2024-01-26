@@ -12,13 +12,14 @@ use app\Manage\validate\AdminRoleValidate;
 use app\Manage\validate\AdminNodeValidate;
 use app\Manage\validate\AdminAccessValidate;
 use think\Exception;
+use think\exception\DbException;
 use think\Session;
 use think\Config;
 use think\Db;
 
 class AdminController extends BaseController
 {
-    public function index()
+    public function index(): \think\response\View
     {
         $keyword = $this->request->get('keyword', '', 'htmlspecialchars');
         $this->assign('keyword', $keyword);
@@ -27,9 +28,8 @@ class AdminController extends BaseController
         }
         $where['id'] = ['neq', 1];
 
-        // 广告列表
         $account = new AccountModel;
-        $list = $account->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'));
+        $list = $account->with('userRole.role')->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'));
         $this->assign('list', $list);
 
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');
@@ -174,6 +174,10 @@ class AdminController extends BaseController
     }
 
     // 状态切换
+
+    /**
+     * @throws DbException
+     */
     public function user_status()
     {
         if ($this->request->isPost()) {
@@ -193,8 +197,32 @@ class AdminController extends BaseController
         }
     }
 
+    // 状态切换
+
+    /**
+     * @throws DbException
+     */
+    public function user_manage()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->post();
+            $user = AccountModel::get($post['id']);
+            $user['manage'] = $user['manage'] == 1 ? 0 : 1;
+            $user->save();
+            echo json_encode(['code' => 1, 'msg' => '操作成功']);
+            exit;
+        } else {
+            echo json_encode(['code' => 0, 'msg' => '异常操作']);
+            exit;
+        }
+    }
+
     // 登录记录
-    public function user_login($id)
+
+    /**
+     * @throws DbException
+     */
+    public function user_login($id): \think\response\View
     {
         $list = new AdminLoginModel();
         $list = $list->where(['status' => AdminLoginModel::STATUS_ACTIVE, 'aid' => $id])->order('id desc')->paginate(Config::get('PAGE_NUM'));
@@ -204,11 +232,14 @@ class AdminController extends BaseController
     }
 
     // 角色
-    public function role()
+
+    /**
+     * @throws DbException
+     */
+    public function role(): \think\response\View
     {
-        // 广告列表
-        $account = new AdminRoleModel;
-        $list = $account->where($where)->order('sort asc,id asc')->paginate(Config::get('PAGE_NUM'));
+        $role = new AdminRoleModel;
+        $list = $role->order('sort asc,id asc')->paginate(Config::get('PAGE_NUM'));
         $this->assign('list', $list);
 
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');

@@ -1,6 +1,7 @@
 <?php
 namespace app\Manage\controller;
 
+use app\Manage\model\AccountModel;
 use app\Manage\model\WarehouseClaimantModel;
 use app\Manage\validate\WarehouseClaimantValidate;
 use think\exception\DbException;
@@ -21,9 +22,12 @@ class WarehouseClaimantController extends BaseController
             $where['shipping_method_no|reference_no|product_sku'] = ['like', '%' . $keyword . '%'];
         }
 
+        $access_ids = AccountModel::account_access_ids();
+        $where['admin_id'] = ['in', $access_ids];
+
         // 列表
-        $storage = new WarehouseClaimantModel();
-        $list = $storage->with(["warehouse","admin"])->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'));
+        $warehouse = new WarehouseClaimantModel();
+        $list = $warehouse->with(["warehouse","admin"])->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'));
         $this->assign('list', $list);
 
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');
