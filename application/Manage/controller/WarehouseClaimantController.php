@@ -127,22 +127,4 @@ class WarehouseClaimantController extends BaseController
         }
         exit;
     }
-
-    // 状态切换
-    /**
-     * @throws DbException
-     */
-    public function status()
-    {
-        if ($this->request->isPost()) {
-            $post = $this->request->post();
-            $user = WarehouseClaimantModel::get($post['id']);
-            $user['state'] = $user['state'] == WarehouseClaimantModel::STATE_ACTIVE ? 0 : WarehouseClaimantModel::STATE_ACTIVE;
-            $user->save();
-            echo json_encode(['code' => 1, 'msg' => '操作成功']);
-        } else {
-            echo json_encode(['code' => 0, 'msg' => '异常操作']);
-        }
-        exit;
-    }
 }
