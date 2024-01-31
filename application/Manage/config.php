@@ -18,6 +18,8 @@ return [
     'USER_LOGIN_FLAG'   =>  'user_login_flag',
     'USER_LOGIN_TIME'   =>  'user_login_time',
     'USER_MENU'         =>  'user_menu',
+    'USER_MAC_TOKEN'    =>  'core_token',
+    'COOKIE_EXPIRED_TIME'   =>  283824000,
 
     // 后台上一页地址
     'BACK_URL'			=>	'back_url',

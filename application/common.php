@@ -27,6 +27,11 @@ function encPass($pass, $salt)
 	}
 }
 
+function encToken($username): string
+{
+    return md5(md5($username . time()));
+}
+
 // 生成置顶长度的随机字符串
 function createNoncestr($length = 32): string
 {
