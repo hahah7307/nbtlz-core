@@ -29,6 +29,8 @@
                     <col>
                     <col>
                     <col>
+                    <col>
+                    <col>
                     {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <col>
                     {/if}
@@ -45,6 +47,8 @@
                     <th class="tc">到账金额</th>
                     <th class="tc">索赔类型</th>
                     <th>所属仓库</th>
+                    <th class="tc">添加时间</th>
+                    <th class="tc">修改时间</th>
                     {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <th>索赔人</th>
                     {/if}
@@ -73,6 +77,8 @@
                         {/if}
                     </td>
                     <td>{$v.warehouse.name}</td>
+                    <td class="tc">{$v.created_at}</td>
+                    <td class="tc">{$v.updated_at}</td>
                     {if condition="$user.super eq 1 or $user.manage eq 1"}
                     <td>{$v.admin.nickname}</td>
                     {/if}

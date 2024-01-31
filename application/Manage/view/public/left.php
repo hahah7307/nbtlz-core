@@ -38,7 +38,7 @@
                         <cite>设置</cite>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a layui-href="{:url('Param/storage')}">参数配置</a></dd>
+                        <dd><a layui-href="{:url('Param/web')}">参数配置</a></dd>
                         <!-- <dd><a layui-href="{:url('Mail/index')}">邮件设置</a></dd> -->
                         {if condition="$user.super eq 1"}
                         <dd data-name="info">
