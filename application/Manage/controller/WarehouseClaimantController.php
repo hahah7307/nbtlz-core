@@ -23,12 +23,18 @@ class WarehouseClaimantController extends BaseController
             $where['shipping_method_no|reference_no|product_sku'] = ['like', '%' . $keyword . '%'];
         }
 
+        $state = $this->request->get('state', '', 'htmlspecialchars');
+        $this->assign('state', $state);
+        if ($state != "") {
+            $where['state'] = $state;
+        }
+
         $access_ids = AccountModel::account_access_ids();
         $where['admin_id'] = ['in', $access_ids];
 
         // 列表
         $warehouse = new WarehouseClaimantModel();
-        $list = $warehouse->with(["warehouse","admin"])->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'));
+        $list = $warehouse->with(["warehouse","admin"])->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword, 'state' => $state]]);
         $this->assign('list', $list);
 
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');

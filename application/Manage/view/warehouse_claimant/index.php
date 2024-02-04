@@ -9,6 +9,13 @@
             <div class="layui-inline w200">
                 <input type="text" class="layui-input" name="keyword" value="{$keyword}" placeholder="跟踪号/订单号/SKU">
             </div>
+            <div class="layui-inline w120">
+                <select name="state" lay-verify="">
+                    <option value="">索赔状态</option>
+                    <option value="0" {if condition="$state eq '0'"}selected{/if}>未完成</option>
+                    <option value="1" {if condition="$state eq '1'"}selected{/if}>已完成</option>
+                </select>
+            </div>
             <div class="layui-inline">
                 <button class="layui-btn" lay-submit lay-filter="Search"><i class="layui-icon">&#xe615;</i> 查询</button>
             </div>
