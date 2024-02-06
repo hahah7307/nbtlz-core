@@ -50,6 +50,10 @@ class WarehouseClaimantController extends BaseController
         if ($this->request->isPost()) {
             $post = $this->request->post();
             $post['admin_id'] = Session::get(Config::get('USER_LOGIN_FLAG'));
+            if ($post['claimant_type'] != 1 && (empty($post['shipping_method_no']) || empty($post['reference_no']))) {
+                echo json_encode(['code' => 0, 'msg' => '非库内丢失，跟踪号和订单号必填！']);
+                exit;
+            }
             $dataValidate = new WarehouseClaimantValidate();
             if ($dataValidate->scene('add')->check($post)) {
                 $model = new WarehouseClaimantModel();
@@ -85,6 +89,10 @@ class WarehouseClaimantController extends BaseController
         if ($this->request->isPost()) {
             $post = $this->request->post();
             $post['admin_id'] = Session::get(Config::get('USER_LOGIN_FLAG'));
+            if ($post['claimant_type'] != 1 && (empty($post['shipping_method_no']) || empty($post['reference_no']))) {
+                echo json_encode(['code' => 0, 'msg' => '非库内丢失，跟踪号和订单号必填！']);
+                exit;
+            }
             $dataValidate = new WarehouseClaimantValidate();
             if ($dataValidate->scene('edit')->check($post)) {
                 $model = new WarehouseClaimantModel();

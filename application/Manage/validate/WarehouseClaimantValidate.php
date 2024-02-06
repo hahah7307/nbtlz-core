@@ -9,8 +9,8 @@ class WarehouseClaimantValidate extends Validate
     protected $rule = [
         'warehouse_id'          =>  'require',
         'claimant_type'         =>  'require',
-        'shipping_method_no'    =>  'require',
-        'reference_no'          =>  'require',
+//        'shipping_method_no'    =>  'require',
+//        'reference_no'          =>  'require',
         'product_sku'           =>  'require',
         'claimant_amount'       =>  'require',
     ];
@@ -29,7 +29,7 @@ class WarehouseClaimantValidate extends Validate
     ];
 
     protected $scene = [
-        'add'           =>  ['warehouse_id', 'claimant_type', 'shipping_method_no', 'reference_no', 'product_sku', 'claimant_amount'],
-        'edit'          =>  ['warehouse_id', 'claimant_type', 'shipping_method_no', 'reference_no', 'product_sku', 'claimant_amount'],
+        'add'           =>  ['warehouse_id', 'claimant_type', 'product_sku', 'claimant_amount'],
+        'edit'          =>  ['warehouse_id', 'claimant_type', 'product_sku', 'claimant_amount'],
     ];
 }
