@@ -13,6 +13,15 @@
                         <cite>控制台</cite>
                     </a>
                 </li>
+                <li data-name="Member" class="layui-nav-item">
+                    <a layui-href="javascript:;" lay-tips="核价" lay-direction="2">
+                        <i class="layui-icon iconfont icon-xunpan"></i>
+                        <cite>返单测算</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a layui-href="{:url('Store/index')}">返单测算</a></dd>
+                    </dl>
+                </li>
                 <li data-name="Storage" class="layui-nav-item">
                     <a layui-href="javascript:;" lay-tips="订单" lay-direction="2">
                         <i class="layui-icon iconfont icon-dingdan1"></i>
