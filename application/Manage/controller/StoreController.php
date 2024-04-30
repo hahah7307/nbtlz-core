@@ -1,17 +1,7 @@
 <?php
 namespace app\Manage\controller;
 
-use app\Manage\model\AHS;
-use app\Manage\model\DeliverFeeModel;
-use app\Manage\model\StorageRuleModel;
-use app\Manage\model\PriceModel;
 use app\Manage\model\StoreModel;
-use app\Manage\validate\PriceValidate;
-use PHPExcel;
-use PHPExcel_IOFactory;
-use PHPExcel_Style_Fill;
-use think\Controller;
-use think\Exception;
 use think\exception\DbException;
 use think\Session;
 use think\Config;
@@ -81,6 +71,7 @@ class StoreController extends BaseController
             $info['post_data'] = json_decode($info['post_data'], true);
             $info['store_data'] = json_decode($info['store_data'], true);
             $this->assign('info', $info);
+//            dump($info->toArray());exit();
 
             $query_date_format = !empty($id) ? date('Y-m-d',strtotime($info['query_date'])) : date('Y-m-d');
             $this->assign('query_date', $query_date_format);

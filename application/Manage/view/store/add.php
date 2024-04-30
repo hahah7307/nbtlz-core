@@ -1,6 +1,7 @@
 
 {include file="public/header" /}
 
+<?php use think\Config; ?>
 <style>
     .layui-body {left: 220px!important;}
     .layui-form-item .layui-inline {margin-right: 0!important;}
@@ -404,12 +405,25 @@
         <tr>
             <th colspan="2" class="tc">CA</th>
         </tr>
+        <tr>
+            <th class="tc">日期</th>
+            <th class="tc">剩余库存</th>
+        </tr>
         </thead>
         <tbody>
         {foreach name="$info.store_data.w" item="w_store"}
         <tr>
             <td class="tc">{:date('Y-m-d', strtotime($key))}</td>
-            <td class="tc">{$w_store|round=###,0}</td>
+            <td class="tc">
+                <?php
+                $w_store_day =  $w_store / (explode(',', $info['w_sale_proportion'])[0] / array_sum(explode(',', $info['w_sale_proportion'])) * $info['sale_data'][substr($key, 0, 6)]);
+                if ($w_store_day > Config::get('MAX_DAY_SALE_TIMES') || $w_store_day < Config::get('MIN_DAY_SALE_TIMES')):
+                ?>
+                <span class="red">
+                <?php endif; ?>
+                    {$w_store|round=###,0}
+                </span>
+            </td>
         </tr>
         {/foreach}
         </tbody>
@@ -423,12 +437,25 @@
         <tr>
             <th colspan="2" class="tc">NJ</th>
         </tr>
+        <tr>
+            <th class="tc">日期</th>
+            <th class="tc">剩余库存</th>
+        </tr>
         </thead>
         <tbody>
         {foreach name="$info.store_data.e" item="e_store"}
         <tr>
             <td class="tc">{:date('Y-m-d', strtotime($key))}</td>
-            <td class="tc">{$e_store|round=###,0}</td>
+            <td class="tc">
+                <?php
+                $e_store_day =  $e_store / (explode(',', $info['w_sale_proportion'])[1] / array_sum(explode(',', $info['w_sale_proportion'])) * $info['sale_data'][substr($key, 0, 6)]);
+                if ($e_store_day > Config::get('MAX_DAY_SALE_TIMES') || $e_store_day < Config::get('MIN_DAY_SALE_TIMES')):
+                ?>
+                <span class="red">
+                <?php endif; ?>
+                    {$e_store|round=###,0}
+                </span>
+            </td>
         </tr>
         {/foreach}
         </tbody>
@@ -442,12 +469,25 @@
         <tr>
             <th colspan="2" class="tc">GA</th>
         </tr>
+        <tr>
+            <th class="tc">日期</th>
+            <th class="tc">剩余库存</th>
+        </tr>
         </thead>
         <tbody>
         {foreach name="$info.store_data.s" item="s_store"}
         <tr>
             <td class="tc">{:date('Y-m-d', strtotime($key))}</td>
-            <td class="tc">{$s_store|round=###,0}</td>
+            <td class="tc">
+                <?php
+                    $s_store_day =  $s_store / (explode(',', $info['w_sale_proportion'])[2] / array_sum(explode(',', $info['w_sale_proportion'])) * $info['sale_data'][substr($key, 0, 6)]);
+                    if ($s_store_day > Config::get('MAX_DAY_SALE_TIMES') || $s_store_day < Config::get('MIN_DAY_SALE_TIMES')):
+                ?>
+                <span class="red">
+                <?php endif; ?>
+                    {$s_store|round=###,0}
+                </span>
+            </td>
         </tr>
         {/foreach}
         </tbody>
@@ -461,12 +501,24 @@
         <tr>
             <th colspan="2" class="tc">TX</th>
         </tr>
+        <tr>
+            <th class="tc">日期</th>
+            <th class="tc">剩余库存</th>
+        </tr>
         </thead>
         <tbody>
         {foreach name="$info.store_data.se" item="se_store"}
         <tr>
             <td class="tc">{:date('Y-m-d', strtotime($key))}</td>
-            <td class="tc">{$se_store|round=###,0}</td>
+            <td class="tc">
+                <?php
+                $se_store_day =  $se_store / (explode(',', $info['w_sale_proportion'])[3] / array_sum(explode(',', $info['w_sale_proportion'])) * $info['sale_data'][substr($key, 0, 6)]);
+                if ($se_store_day > Config::get('MAX_DAY_SALE_TIMES') || $se_store_day < Config::get('MIN_DAY_SALE_TIMES')):
+                ?>
+                <span class="red">
+                    <?php endif; ?>
+                        {$se_store|round=###,0}
+                </span>
         </tr>
         {/foreach}
         </tbody>
@@ -479,6 +531,10 @@
         <thead>
         <tr>
             <th colspan="2" class="tc">总库存预警</th>
+        </tr>
+        <tr>
+            <th class="tc">总库存</th>
+            <th class="tc">备注</th>
         </tr>
         </thead>
         <tbody>
