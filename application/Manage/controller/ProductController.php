@@ -1,7 +1,9 @@
 <?php
 namespace app\Manage\controller;
 
+use app\Manage\model\AccountModel;
 use app\Manage\model\ApiClient;
+use app\Manage\model\ProductEditLogModel;
 use app\Manage\model\ProductModel;
 use app\Manage\model\UserModel;
 use think\db\exception\DataNotFoundException;
@@ -81,6 +83,18 @@ class ProductController extends BaseController
                 $jsonString = implode(',', $string);
                 $rest = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "syncBatchProduct", '[' . $jsonString . ']');
                 if ($rest['code'] == 1) {
+                    $logModel = new ProductEditLogModel();
+                    $user = AccountModel::where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
+                    $data = [
+                        'user_name'     =>  $post['user_name'],
+                        'type'          =>  $post['type'],
+                        'tag'           =>  "syncBatchProduct",
+                        'content'       =>  $post['content'],
+                        'content_json'  =>  '[' . $jsonString . ']',
+                        'created_at'    =>  date('Y-m-d H:i:s'),
+                        'created_id'    =>  $user['id']
+                    ];
+                    $logModel->insert($data);
                     $productModel->saveAll($productList);
                     echo json_encode(['code' => 1, 'msg' => '编辑成功']);
                 } else {
