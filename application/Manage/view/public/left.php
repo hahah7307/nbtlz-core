@@ -31,6 +31,16 @@
                         <dd><a layui-href="{:url('WarehouseClaimant/index')}">海外仓索赔</a></dd>
                     </dl>
                 </li>
+                <li data-name="SkuRelation" class="layui-nav-item">
+                    <a layui-href="javascript:;" lay-tips="产品" lay-direction="2">
+                        <i class="layui-icon iconfont icon-dingdan1"></i>
+                        <cite>产品</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a layui-href="{:url('Product/index')}">产品列表</a></dd>
+                        <dd><a layui-href="{:url('Product/edit')}">产品编辑</a></dd>
+                    </dl>
+                </li>
                 {if condition="$user.super eq 1"}
                 <li data-name="Storage" class="layui-nav-item">
                     <a layui-href="javascript:;" lay-tips="仓库" lay-direction="2">

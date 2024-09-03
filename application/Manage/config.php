@@ -67,4 +67,10 @@ return [
     'AMERICAN_SOUTH_ORDER_DAY'              =>  105,                        // 美南下单至到港所需日期
     'AMERICAN_SOUTH_EAST_TRANSFER_DAY'      =>  52,                         // 美东南出运至到港所需日期
     'AMERICAN_SOUTH_EAST_ORDER_DAY'         =>  112,                        // 美东南下单至到港所需日期
+
+
+    'ec_wms_uri'                =>  'https://nt5e7hf.eccang.com/default/svc-open/web-service-v2',
+    'ec_eb_uri'                 =>  'http://nt5e7hf-eb.eccang.com/default/svc-open/web-service-v2',
+    'ec_warehouse_username'     =>  'NJJ',
+    'ec_warehouse_userpass'     =>  'alex02081888',
 ];
