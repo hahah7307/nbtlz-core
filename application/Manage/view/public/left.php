@@ -39,6 +39,7 @@
                     <dl class="layui-nav-child">
                         <dd><a layui-href="{:url('Product/index')}">产品列表</a></dd>
                         <dd><a layui-href="{:url('Product/edit')}">产品编辑</a></dd>
+                        <dd><a layui-href="{:url('Product/warehouse_barcode')}">海外仓编码</a></dd>
                     </dl>
                 </li>
                 {if condition="$user.super eq 1"}

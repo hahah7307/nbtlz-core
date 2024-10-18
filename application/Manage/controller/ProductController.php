@@ -6,6 +6,7 @@ use app\Manage\model\ApiClient;
 use app\Manage\model\ProductEditLogModel;
 use app\Manage\model\ProductModel;
 use app\Manage\model\UserModel;
+use app\Manage\model\WarehouseAreaModel;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
 use think\exception\DbException;
@@ -67,7 +68,7 @@ class ProductController extends BaseController
                             $sellerId = [];
                             foreach ($userList as $userId) {
                                 $user = $userModel->where(['user_id' => $userId])->find();
-                                if ($userAdd['user_code'] != $user['user_code']) {
+                                if ($userAdd['user_code'] != $user['user_code'] && $user['user_code'] != 'LJT') {
                                     $userArr[] = '"' . $user['user_code'] . '"';
                                     $sellerId[] = $user['user_id'];
                                 }
@@ -105,6 +106,93 @@ class ProductController extends BaseController
             }
             exit();
         } else {
+
+            return view();
+        }
+    }
+
+    /**
+     * @throws DbException
+     * @throws \SoapFault
+     */
+    public function warehouse_barcode()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->post();
+
+            if (empty($post['sku'])) {
+                echo json_encode(['code' => 0, 'msg' => '请输入SKU']);
+                exit();
+            }
+
+            if (empty($post['warehouse_code'])) {
+                echo json_encode(['code' => 0, 'msg' => '请选择你需要添加的仓库']);
+                exit();
+            }
+
+            $skuList = array_filter(explode("\r\n", $post['sku']));
+            if ($post['is_verify']) {
+                $productModel = new ProductModel();
+                $noSku = [];
+                foreach ($skuList as $item) {
+                    $product = $productModel->where(['productSku' => $item])->find();
+                    if (empty($product)) {
+                        $noSku[] = $item;
+                    }
+                }
+                if ($noSku) {
+                    echo json_encode(['code' => 0, 'msg' => implode(',', $noSku) . '在易仓系统不存在，请及时创建！']);
+                    exit();
+                }
+            }
+
+            $warehouseNewId = [];
+            $warehouseBarcode = WarehouseAreaModel::all();
+            foreach ($skuList as $sku) {
+                $jsonString = '
+{
+    "warehouse_code":["' . implode('","', array_column($warehouseBarcode->toArray(), 'warehouse_code')) . '"],
+    "product_barcode":"' . $sku . '",
+    "pageSize":1000,
+    "page":1
+}  
+                ';
+                $rest = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "getProductBarcodeMapList", $jsonString);
+                if ($rest['code'] == 1 && $rest['data']) {
+                    foreach ($post['warehouse_code'] as $warehouseId) {
+                        $warehouseArea = WarehouseAreaModel::where(['warehouse_id' => $warehouseId])->find();
+                        $sum = 0;
+                        foreach ($rest['data'] as $datum) {
+                            if ($datum['warehouse_code'] == $warehouseArea['warehouse_code']) {
+                                $sum ++;
+                                break;
+                            }
+                        }
+                        if ($sum == 0) {
+                            $warehouseNewId[] = '{"product_barcode":"' . $sku . '","warehouse_product_barcode":"' . $sku . '","barcode":"' . $sku . '","warehouse_id":' . $warehouseId . '}';
+                        }
+                    }
+                }
+
+            }
+
+            if ($warehouseNewId) {
+                $jsonString2 = '{"data":[' . implode(',', $warehouseNewId) . ']}';
+                $rest2 = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "batchAddProductBarCodeMap", $jsonString2);
+                if ($rest2['code'] == 1) {
+                    echo json_encode(['code' => 1, 'msg' => '操作成功']);
+                    exit();
+                } else {
+                    echo json_encode(['code' => 0, 'msg' => '操作失败，请重试']);
+                    exit();
+                }
+            } else {
+                echo json_encode(['code' => 1, 'msg' => '无需新增']);
+                exit();
+            }
+        } else {
+            $warehouseBarcode = WarehouseAreaModel::all();
+            $this->assign('warehouseBarcode', $warehouseBarcode);
 
             return view();
         }
