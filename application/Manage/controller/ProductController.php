@@ -62,7 +62,7 @@ class ProductController extends BaseController
                 foreach ($list as $item) {
                     $product = $productModel->where(['productSku' => $item])->find();
                     if (!empty($product)) {
-                        if ($product['sellerId']) {
+                        if ($product['sellerId'] || $product['sellerId'] == '0') {
                             $userList = array_filter(explode(",", $product['sellerId']));
                             $userArr = [];
                             $sellerId = [];
