@@ -50,6 +50,7 @@
                     </a>
                     <dl class="layui-nav-child">
                         <dd><a layui-href="{:url('Warehouse/index')}">基础仓库</a></dd>
+                        <dd><a layui-href="{:url('UserAccount/index')}">基础店铺</a></dd>
                     </dl>
                 </li>
                 <li data-name="Site" class="layui-nav-item">
