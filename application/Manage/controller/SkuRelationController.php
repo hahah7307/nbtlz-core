@@ -748,4 +748,27 @@ class SkuRelationController extends BaseController
 
         return ApiClient::EcWarehouseApi(Config::get("ec_eb_uri"), "modifySkuRelation", json_encode($dataArr));
     }
+
+    /**
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws DataNotFoundException
+     */
+    public function getWarehouseSkuByWsgCode()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->post();
+            $wsg_code = $post['wsg_code'];
+
+            $skuRelationItemModel = new SkuRelationItemModel();
+            $list = $skuRelationItemModel->where(['wsg_code' => $wsg_code])->select();
+            $labelArr = [];
+            foreach ($list as $value) {
+                $labelArr[] = $value['warehouse_sku'] . ' * ' . $value['qty'];
+            }
+
+            echo json_encode(['code' => 1, 'msg' => implode(', ', $labelArr)]);
+            exit;
+        }
+    }
 }

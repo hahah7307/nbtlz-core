@@ -36,7 +36,7 @@
                 <tr>
                     <td>{$v.seller_sku}</td>
                     <td>{$v.ss_code}</td>
-                    <td>{$v.wsg_code}</td>
+                    <td lay-submit lay-filter="WSGCODE" style="cursor: pointer; color: royalblue">{$v.wsg_code}</td>
                     <td>{$v.action}</td>
                     <td>
                         {if condition="$v.status eq 0"}
@@ -69,6 +69,31 @@
         let $ = layui.jquery,
             form = layui.form;
 
+        //
+        form.on('submit(WSGCODE)', function(data){
+            let text = $(this).text();
+            axios.post("{:url('getWarehouseSkuByWsgCode')}", {wsg_code: text})
+                .then(function (response) {
+                    let res = response.data;
+                    if (res.code === 1) {
+                        // layer.alert(res.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c',},function(){
+                        //     location.reload();
+                        // });
+                        layer.msg(res.msg);
+                    } else {
+                        layer.alert(res.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
+                            layer.closeAll();
+                            $('button').attr('disabled',false);
+                            button.text(text);
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            return false;
+            layer.msg(text);
+        });
     });
 </script>
 
