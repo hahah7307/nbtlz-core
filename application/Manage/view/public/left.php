@@ -32,8 +32,18 @@
                     </dl>
                 </li>
                 <li data-name="SkuRelation" class="layui-nav-item">
+                    <a layui-href="javascript:;" lay-tips="销售" lay-direction="2">
+                        <i class="layui-icon iconfont icon-xiaoshoue"></i>
+                        <cite>销售</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a layui-href="{:url('SkuRelation/index')}">销售产品</a></dd>
+                        <dd><a layui-href="{:url('SkuRelation/audit')}">销售产品审核</a></dd>
+                    </dl>
+                </li>
+                <li data-name="SkuRelation" class="layui-nav-item">
                     <a layui-href="javascript:;" lay-tips="产品" lay-direction="2">
-                        <i class="layui-icon iconfont icon-dingdan1"></i>
+                        <i class="layui-icon iconfont icon-chanpin1"></i>
                         <cite>产品</cite>
                     </a>
                     <dl class="layui-nav-child">

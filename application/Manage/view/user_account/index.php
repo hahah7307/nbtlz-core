@@ -67,7 +67,11 @@
             layer.confirm('确定删除吗？',{icon:3,closeBtn:0,title:false,btnAlign:'c'},function(){
                 $('button').attr('disabled',true);
                 button.text('请稍候...');
-                axios.post("{:url('delete')}", {id:id})
+                axios.post("{:url('delete')}", {id:id}, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
                     .then(function (response) {
                         let res = response.data;
                         if (res.code === 1) {

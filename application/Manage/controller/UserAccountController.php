@@ -147,7 +147,7 @@ class UserAccountController extends BaseController
                 exit;
             }
         } else {
-            $this->assign('user_account', AccountModel::get($id));
+            $this->assign('user_account', UserAccountModel::get($id));
             $userAccountAccessModel = new UserAccountAccessModel();
             $userAccountAccess = $userAccountAccessModel->where(['user_account_id' => $id])->select();
             $this->assign('userAccountAccess', $userAccountAccess);
