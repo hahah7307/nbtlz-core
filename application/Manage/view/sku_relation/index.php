@@ -45,8 +45,8 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>系统编号</th>
-                    <th>系统编号</th>
+                    <th>销售SKU系统编号</th>
+                    <th>仓库SKU组系统编号</th>
                     <th>所属平台</th>
                     <th>所属店铺</th>
                     <th>所属仓库</th>

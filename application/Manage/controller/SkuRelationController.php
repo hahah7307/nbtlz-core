@@ -2,6 +2,7 @@
 namespace app\Manage\controller;
 
 use app\Manage\model\AccountModel;
+use app\Manage\model\ApiClient;
 use app\Manage\model\ProductModel;
 use app\Manage\model\SkuRelationItemModel;
 use app\Manage\model\SkuRelationLogModel;
@@ -350,8 +351,11 @@ class SkuRelationController extends BaseController
                     // 新建待审核
                     if ($skuRelationModel->where(['ss_code' => $ssCode])->setField('status', 1)) {
                         if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->setField('status', 1)) {
-                            //
+                            $res = self::sendSkuRelationRequest($skuRelation, $post['wsg_code']);
+                            if (empty($res['code'])) {
 
+                                throw new Exception($res['data']);
+                            }
 
                             // 审核记录
                             $logData = [
@@ -385,7 +389,11 @@ class SkuRelationController extends BaseController
                     if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 1])->setField('status', 4)) {
                         if ($skuRelationModel->where(['ss_code' => $ssCode])->setField('wsg_code', $post['wsg_code'])) {
                             if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->setField('status', 1)) {
+                                $res = self::sendSkuRelationRequest($skuRelation, $post['wsg_code']);
+                                if (empty($res['code'])) {
 
+                                    throw new Exception($res['data']);
+                                }
 
                                 //
 
@@ -709,5 +717,35 @@ class SkuRelationController extends BaseController
             echo json_encode(['code' => 0, 'msg' => '异常操作']);
         }
         exit;
+    }
+
+    /**
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws \SoapFault
+     */
+    static public function sendSkuRelationRequest($skuRelation, $wsgCode): array
+    {
+        $userAccountModel = new UserAccountModel();
+        $skuRelationItemModel = new SkuRelationItemModel();
+        $userAccount = $userAccountModel->find($skuRelation['user_account']);
+        $skuRelationItems = $skuRelationItemModel->where(['ss_code' => $skuRelation['ss_code'], 'wsg_code' => $wsgCode])->select();
+        $pcr = [];
+        foreach ($skuRelationItems as $item) {
+            $pcr[] = [
+                'pcr_product_sku'   =>  $item['warehouse_sku'],
+                'pcr_quantity'      =>  intval($item['qty']),
+                'pcr_pu_price'      =>  $item['percent'] * intval($item['qty']) * 100000
+            ];
+        }
+
+        $dataArr['data'][] = [
+            'product_sku'   =>  $skuRelation['seller_sku'],
+            'user_account'  =>  [$userAccount['user_account']],
+            'pcr'           =>  $pcr
+        ];
+
+        return ApiClient::EcWarehouseApi(Config::get("ec_eb_uri"), "modifySkuRelation", json_encode($dataArr));
     }
 }

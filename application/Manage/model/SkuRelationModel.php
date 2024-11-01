@@ -37,6 +37,6 @@ class SkuRelationModel extends Model
             $list[] = $value['warehouse_sku'] . ' * ' . $value['qty'];
         }
 
-        return implode(',', $list);
+        return implode(', ', $list);
     }
 }

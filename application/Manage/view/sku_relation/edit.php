@@ -4,13 +4,13 @@
 <!-- 主体内容 -->
 <div class="layui-body" id="LAY_app_body">
     <div class="right">
-        <a href="{:url('index')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
+        <a href="{:session('manage.back_url')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
         <div class="title">编辑销售产品</div>
         <div class="layui-form">
             <div class="layui-form-item">
                 <label class="layui-form-label">所属平台</label>
                 <div class="layui-input-block w300"">
-                <select name="platform" lay-filter="platform" id="platform">
+                <select name="platform" lay-filter="platform" id="platform" disabled>
                     <option value=""></option>
                     {foreach name="platform" item="v"}
                     <option value="{$v.platform}" {if condition="$info.platform eq $v.platform"}selected{/if}>{$v.platform}</option>
@@ -21,14 +21,14 @@
         <div class="layui-form-item">
             <label class="layui-form-label">所属店铺</label>
             <div class="layui-input-block w300"">
-            <select name="user_account" lay-filter="user_account" id="user_account">
+            <select name="user_account" lay-filter="user_account" id="user_account" disabled>
             </select>
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">销售SKU</label>
         <div class="layui-input-inline w300">
-            <input type="text" class="layui-input" name="seller_sku" value="{$info.seller_sku}" placeholder="请填写销售SKU">
+            <input type="text" class="layui-input" name="seller_sku" value="{$info.seller_sku}" disabled placeholder="请填写销售SKU">
         </div>
     </div>
     {foreach name="list" key="k" item="v"}
@@ -139,7 +139,7 @@
                     let res = response.data;
                     if (res.code === 1) {
                         layer.alert(res.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c',},function(){
-                            location.reload();
+                            location.href = "{:session('manage.back_url')}";
                         });
                     } else {
                         layer.alert(res.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
