@@ -246,7 +246,7 @@ class SkuRelationController extends BaseController
 
                 $skuRelationItemModel = new SkuRelationItemModel();
                 if (!$skuRelationItemModel->insertAll($itemData)) {
-                    throw new Exception("新增失败，请重试！");
+                    throw new Exception("编辑失败，请重试！");
                 }
 
                 // 编辑记录
@@ -262,7 +262,7 @@ class SkuRelationController extends BaseController
                 ];
                 $skuRelationLogModel = new SkuRelationLogModel();
                 if (!$skuRelationLogModel->insert($logData)) {
-                    throw new Exception("新建失败，请重试！");
+                    throw new Exception("编辑失败，请重试！");
                 }
 
                 Db::commit();
@@ -386,7 +386,8 @@ class SkuRelationController extends BaseController
                     }
                 } elseif ($skuRelationItem['status'] == 2) {
                     // 编辑待审核
-                    if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 1])->setField('status', 4)) {
+                    if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 1])->setField('seller_sku', $skuRelation['seller_sku'] . '-' . mt_rand(100, 999))) {
+                        $skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 1])->setField('status', 4);
                         if ($skuRelationModel->where(['ss_code' => $ssCode])->setField('wsg_code', $post['wsg_code'])) {
                             if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->setField('status', 1)) {
                                 $res = self::sendSkuRelationRequest($skuRelation, $post['wsg_code']);
@@ -430,7 +431,8 @@ class SkuRelationController extends BaseController
                     }
                 } elseif ($skuRelationItem['status'] == 3) {
                     // 停用待审核
-                    if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 3])->setField('status', 4)) {
+                    if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 3])->setField('seller_sku', $skuRelation['seller_sku'] . '-' . mt_rand(100, 999))) {
+                        $skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 3])->setField('status', 4);
                         if ($skuRelationModel->where(['ss_code' => $ssCode])->setField('status', 4)) {
                             //
 
