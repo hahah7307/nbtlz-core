@@ -34,7 +34,7 @@ class SkuRelationModel extends Model
         $warehouseSku = $skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->select();
         $list = [];
         foreach ($warehouseSku as $value) {
-            $list[] = $value['warehouse_sku'] . ' * ' . $value['qty'];
+            $list[] = $value['warehouse_sku'] . ' * ' . intval($value['qty']);
         }
 
         return implode(', ', $list);

@@ -766,7 +766,7 @@ class SkuRelationController extends BaseController
             $list = $skuRelationItemModel->where(['wsg_code' => $wsg_code])->select();
             $labelArr = [];
             foreach ($list as $value) {
-                $labelArr[] = $value['warehouse_sku'] . ' * ' . $value['qty'];
+                $labelArr[] = $value['warehouse_sku'] . ' * ' . intval($value['qty']);
             }
 
             echo json_encode(['code' => 1, 'msg' => implode(', ', $labelArr)]);
