@@ -89,8 +89,8 @@
                     </td>
                     <td class="tc">
                         <a href="{:url('log', ['ssCode' => $v.ss_code])}" class="layui-btn layui-btn-sm">日志</a>
-                        <a href="{:url('edit', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">编辑</a>
-                        <button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-danger ml0" lay-submit lay-filter="Detele">停用</button>
+                        {if condition="$v.status eq 1"}<a href="{:url('edit', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">编辑</a>{/if}
+                        {if condition="$v.status eq 1"}<button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-danger ml0" lay-submit lay-filter="Detele">停用</button>{/if}
                     </td>
                 </tr>
                 {/foreach}

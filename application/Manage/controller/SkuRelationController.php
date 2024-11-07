@@ -308,6 +308,9 @@ class SkuRelationController extends BaseController
 
             $skuRelationModel = new SkuRelationModel();
             $skuRelation = $skuRelationModel->find($id);
+            if ($skuRelation['status'] != 1) {
+                $this->error('只有使用中的销售产品可编辑，请新建', \session('back_url'));
+            }
             $this->assign('info', $skuRelation);
             $skuRelationItemModel = new SkuRelationItemModel();
             $items = $skuRelationItemModel->where(['wsg_code' => $skuRelation['wsg_code'], 'ss_code' => $skuRelation['ss_code']])->select();
@@ -370,9 +373,6 @@ class SkuRelationController extends BaseController
             try {
                 $ssCode = $post['ss_code'];
 
-                //
-                $skuRelationValidate = new SkuRelationValidate();
-                $skuRelationItemValidate = new SkuRelationItemValidate();
                 $skuRelationLogValidate = new SkuRelationLogValidate();
                 $skuRelationModel = new SkuRelationModel();
                 $skuRelationItemModel = new SkuRelationItemModel();
@@ -531,16 +531,16 @@ class SkuRelationController extends BaseController
             try {
                 $ssCode = $post['ss_code'];
 
-                //
+                $skuRelationLogValidate = new SkuRelationLogValidate();
                 $skuRelationModel = new SkuRelationModel();
                 $skuRelationItemModel = new SkuRelationItemModel();
+                $skuRelationLogModel = new SkuRelationLogModel();
                 $skuRelation = $skuRelationModel->where(['ss_code' => $ssCode])->find();
                 $skuRelationItem = $skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->find();
                 if ($skuRelationItem['status'] == 0) {
                     // 新建待审核
-                    if ($skuRelationModel->where(['ss_code' => $ssCode])->setField('status', 5)) {
-                        if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->setField('status', 5)) {
-                            //
+                    if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'status' => 5])) {
+                        if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->update(['status' => 5, 'updated_time' => date('Y-m-d H:i:s')])) {
 
                             // 审核记录
                             $logData = [
@@ -549,30 +549,29 @@ class SkuRelationController extends BaseController
                                 'wsg_code'      =>  $skuRelation['wsg_code'],
                                 'action'        =>  '审核驳回',
                                 'status'        =>  5,
-                                'created_time'  =>  date('Y-m-d H:i:s'),
                                 'action_user'   =>  $user['nickname'],
                                 'action_ip'     =>  get_real_ip()
                             ];
-                            $skuRelationLogModel = new SkuRelationLogModel();
-                            if (!$skuRelationLogModel->insert($logData)) {
-                                throw new Exception("审核失败，请重试！");
+                            if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                if ($skuRelationLogModel->allowField(true)->save($logData)) {
+                                    Db::commit();
+                                    echo json_encode(['code' => 1, 'msg' => '操作成功']);
+                                    exit;
+                                } else {
+                                    throw new Exception("审核失败，请重试");
+                                }
+                            } else {
+                                throw new Exception($skuRelationLogValidate->getError());
                             }
-
-                            Db::commit();
-                            echo json_encode(['code' => 1, 'msg' => '操作成功']);
-                            exit;
                         } else {
-
                             throw new Exception("审核失败，请重试");
                         }
                     } else {
-
                         throw new Exception("审核失败，请重试");
                     }
                 } elseif ($skuRelationItem['status'] == 2) {
                     // 编辑待审核
-                    if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->setField('status', 5)) {
-                        //
+                    if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->update(['status' => 5, 'updated_time' => date('Y-m-d H:i:s')])) {
 
                         // 审核记录
                         $logData = [
@@ -581,27 +580,28 @@ class SkuRelationController extends BaseController
                             'wsg_code'      =>  $skuRelation['wsg_code'],
                             'action'        =>  '审核驳回',
                             'status'        =>  5,
-                            'created_time'  =>  date('Y-m-d H:i:s'),
                             'action_user'   =>  $user['nickname'],
                             'action_ip'     =>  get_real_ip()
                         ];
-                        $skuRelationLogModel = new SkuRelationLogModel();
-                        if (!$skuRelationLogModel->insert($logData)) {
-                            throw new Exception("审核失败，请重试！");
+                        if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                            if ($skuRelationLogModel->allowField(true)->save($logData)) {
+                                Db::commit();
+                                echo json_encode(['code' => 1, 'msg' => '操作成功']);
+                                exit;
+                            } else {
+                                throw new Exception("审核失败，请重试");
+                            }
+                        } else {
+                            throw new Exception($skuRelationLogValidate->getError());
                         }
-
-                        Db::commit();
-                        echo json_encode(['code' => 1, 'msg' => '操作成功']);
-                        exit;
                     } else {
 
                         throw new Exception("审核失败，请重试");
                     }
                 } elseif ($skuRelationItem['status'] == 3) {
                     // 停用待审核
-                    if ($skuRelationItemModel->where(['ss_code' => $ssCode, 'status' => 3])->setField('status', 1)) {
-                        if ($skuRelationModel->where(['ss_code' => $ssCode])->setField('status', 1)) {
-                            //
+                    if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->update(['status' => 1, 'updated_time' => date('Y-m-d H:i:s')])) {
+                        if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'status' => 1])) {
 
                             // 审核记录
                             $logData = [
@@ -610,18 +610,20 @@ class SkuRelationController extends BaseController
                                 'wsg_code'      =>  $skuRelation['wsg_code'],
                                 'action'        =>  '审核驳回',
                                 'status'        =>  1,
-                                'created_time'  =>  date('Y-m-d H:i:s'),
                                 'action_user'   =>  $user['nickname'],
                                 'action_ip'     =>  get_real_ip()
                             ];
-                            $skuRelationLogModel = new SkuRelationLogModel();
-                            if (!$skuRelationLogModel->insert($logData)) {
-                                throw new Exception("审核失败，请重试！");
+                            if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                if ($skuRelationLogModel->allowField(true)->save($logData)) {
+                                    Db::commit();
+                                    echo json_encode(['code' => 1, 'msg' => '操作成功']);
+                                    exit;
+                                } else {
+                                    throw new Exception("审核失败，请重试");
+                                }
+                            } else {
+                                throw new Exception($skuRelationLogValidate->getError());
                             }
-
-                            Db::commit();
-                            echo json_encode(['code' => 1, 'msg' => '操作成功']);
-                            exit;
                         } else {
 
                             throw new Exception("审核失败，请重试");
@@ -808,7 +810,7 @@ class SkuRelationController extends BaseController
             $list = $skuRelationItemModel->where(['wsg_code' => $wsg_code])->select();
             $labelArr = [];
             foreach ($list as $value) {
-                $labelArr[] = $value['warehouse_sku'] . ' * ' . intval($value['qty']);
+                $labelArr[] = $value['warehouse_sku'] . ' * ' . intval($value['qty']) . "(" . $value['percent'] . ")";
             }
 
             echo json_encode(['code' => 1, 'msg' => implode(', ', $labelArr)]);
