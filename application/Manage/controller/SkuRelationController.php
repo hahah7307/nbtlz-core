@@ -331,7 +331,7 @@ class SkuRelationController extends BaseController
             if ($userAccount) {
                 $where['user_account'] = $userAccount['id'];
             } else {
-                $where['seller_sku|ss_code|wsg_code|warehouse_name|platform'] = ['like', '%' . $keyword . '%'];
+                $where['a.seller_sku|a.ss_code|a.wsg_code|warehouse_name|platform'] = ['like', '%' . $keyword . '%'];
             }
         }
 
