@@ -19,11 +19,15 @@
         </form>
 
         <div class="layui-form">
+            {if condition="$user.super or $user.manage"}
             <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Audit">批量审核</a>
             <a class="layui-btn layui-btn-danger" lay-submit lay-filter="Reject">批量驳回</a>
+            {/if}
             <table class="layui-table" lay-size="sm">
                 <colgroup>
+                    {if condition="$user.super or $user.manage"}
                     <col width="50">
+                    {/if}
                     <col>
                     <col>
                     <col>
@@ -41,9 +45,11 @@
                 </colgroup>
                 <thead>
                 <tr>
+                    {if condition="$user.super or $user.manage"}
                     <th class="tc">
                         <input type="checkbox" lay-skin="primary" id="YanNanQiu_checkall" lay-filter="YanNanQiu_checkall">
                     </th>
+                    {/if}
                     <th>销售SKU系统编号</th>
                     <th>仓库SKU组系统编号</th>
                     <th>所属平台</th>
@@ -63,11 +69,13 @@
                 <tbody>
                 {foreach name="list" item="v"}
                 <tr>
+                    {if condition="$user.super or $user.manage"}
                     <td class="tc">
                         <div class="YanNanQiu_Checkbox">
                             <input type="checkbox" name="input[]" lay-skin="primary" lay-filter="imgbox" class="YanNanQiu_imgId" value="{$v.ss_code}-{$v.wsg_code}">
                         </div>
                     </td>
+                    {/if}
                     <td>{$v.ss_code}</td>
                     <td>{$v.wsg_code}</td>
                     <td>{$v.platform}</td>
