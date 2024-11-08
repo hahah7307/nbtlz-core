@@ -348,8 +348,9 @@ class SkuRelationController extends BaseController
         $list = $skuRelationModel->alias('a')
             ->distinct(true)
             ->join('nbtlz_sku_relation_item b', 'a.ss_code = b.ss_code', 'LEFT')
-            ->field('b.ss_code, b.wsg_code, a.platform, a.user_account, a.warehouse_name, a.seller_sku, b.created_time, a.seller_id, b.status')
+            ->field('b.ss_code, b.wsg_code, a.platform, a.user_account, a.warehouse_name, a.seller_sku, b.created_time, b.updated_time, a.seller_id, b.status')
             ->where($where)
+            ->order('updated_time asc')
             ->paginate(Config::get('PAGE_NUM'), false, ['keyword' => $keyword]);
         $this->assign('list', $list);
 
@@ -752,7 +753,6 @@ class SkuRelationController extends BaseController
                             throw new Exception($skuRelationLogValidate->getError());
                         }
                     } else {
-
                         throw new Exception("审核失败，请重试");
                     }
                 } elseif ($skuRelationItem['status'] == 3) {
@@ -782,17 +782,141 @@ class SkuRelationController extends BaseController
                                 throw new Exception($skuRelationLogValidate->getError());
                             }
                         } else {
-
                             throw new Exception("审核失败，请重试");
                         }
                     } else {
-
                         throw new Exception("审核失败，请重试");
                     }
                 } else {
-
                     throw new Exception("异常操作");
                 }
+            } catch (Exception $e) {
+                Db::rollback();
+                echo json_encode(['code' => 0, 'msg' => $e->getMessage()]);
+                exit;
+            }
+        } else {
+            echo json_encode(['code' => 0, 'msg' => '异常操作']);
+            exit;
+        }
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DbException
+     * @throws DataNotFoundException
+     */
+    public function rejectAll()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->post();
+            if (empty($post['data'])) {
+                echo json_encode(['code' => 0, 'msg' => '请选择你要审核的销售产品']);
+                exit;
+            }
+            $userModel = new AccountModel();
+            $user = $userModel->where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
+
+            Db::startTrans();
+            try {
+                $skuRelationArr = [];
+                foreach ($post['data'] as $item) {
+                    $systemCodes = explode('-', $item);
+                    $ssCode = $systemCodes[0];
+                    $wsgCode = $systemCodes[1];
+
+                    $skuRelationLogValidate = new SkuRelationLogValidate();
+                    $skuRelationModel = new SkuRelationModel();
+                    $skuRelationItemModel = new SkuRelationItemModel();
+                    $skuRelationLogModel = new SkuRelationLogModel();
+                    $skuRelation = $skuRelationModel->where(['ss_code' => $ssCode])->find();
+                    $skuRelationItem = $skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->find();
+                    if ($skuRelationItem['status'] == 0) {
+                        // 新建待审核
+                        if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'status' => 5])) {
+                            if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->update(['status' => 5, 'updated_time' => date('Y-m-d H:i:s')])) {
+                                // 审核记录
+                                $logData = [
+                                    'seller_sku' => $skuRelation['seller_sku'],
+                                    'ss_code' => $ssCode,
+                                    'wsg_code' => $skuRelation['wsg_code'],
+                                    'action' => '审核驳回',
+                                    'status' => 5,
+                                    'action_user' => $user['nickname'],
+                                    'action_ip' => get_real_ip()
+                                ];
+                                if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                    if (!$skuRelationLogModel->allowField(true)->save($logData)) {
+                                        throw new Exception("审核失败，请重试");
+                                    }
+                                } else {
+                                    throw new Exception($skuRelationLogValidate->getError());
+                                }
+                            } else {
+                                throw new Exception("审核失败，请重试");
+                            }
+                        } else {
+                            throw new Exception("审核失败，请重试");
+                        }
+                    } elseif ($skuRelationItem['status'] == 2) {
+                        // 编辑待审核
+                        if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->update(['status' => 5, 'updated_time' => date('Y-m-d H:i:s')])) {
+                            // 审核记录
+                            $logData = [
+                                'seller_sku' => $skuRelation['seller_sku'],
+                                'ss_code' => $ssCode,
+                                'wsg_code' => $skuRelation['wsg_code'],
+                                'action' => '审核驳回',
+                                'status' => 5,
+                                'action_user' => $user['nickname'],
+                                'action_ip' => get_real_ip()
+                            ];
+                            if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                if (!$skuRelationLogModel->allowField(true)->save($logData)) {
+                                    throw new Exception("审核失败，请重试");
+                                }
+                            } else {
+                                throw new Exception($skuRelationLogValidate->getError());
+                            }
+                        } else {
+
+                            throw new Exception("审核失败，请重试");
+                        }
+                    } elseif ($skuRelationItem['status'] == 3) {
+                        // 停用待审核
+                        if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->update(['status' => 1, 'updated_time' => date('Y-m-d H:i:s')])) {
+                            if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'status' => 1])) {
+                                // 审核记录
+                                $logData = [
+                                    'seller_sku' => $skuRelation['seller_sku'],
+                                    'ss_code' => $ssCode,
+                                    'wsg_code' => $skuRelation['wsg_code'],
+                                    'action' => '审核驳回',
+                                    'status' => 1,
+                                    'action_user' => $user['nickname'],
+                                    'action_ip' => get_real_ip()
+                                ];
+                                if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                    if (!$skuRelationLogModel->allowField(true)->save($logData)) {
+                                        throw new Exception("审核失败，请重试");
+                                    }
+                                } else {
+                                    throw new Exception($skuRelationLogValidate->getError());
+                                }
+                            } else {
+                                throw new Exception("审核失败，请重试");
+                            }
+                        } else {
+                            throw new Exception("审核失败，请重试");
+                        }
+                    } else {
+                        throw new Exception("异常操作");
+                    }
+                }
+
+                Db::commit();
+                echo json_encode(['code' => 1, 'msg' => '操作成功']);
+                exit;
             } catch (Exception $e) {
                 Db::rollback();
                 echo json_encode(['code' => 0, 'msg' => $e->getMessage()]);

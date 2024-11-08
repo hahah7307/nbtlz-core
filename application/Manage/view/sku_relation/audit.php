@@ -20,9 +20,11 @@
 
         <div class="layui-form">
             <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Audit">批量审核</a>
+            <a class="layui-btn layui-btn-danger" lay-submit lay-filter="Reject">批量驳回</a>
             <table class="layui-table" lay-size="sm">
                 <colgroup>
                     <col width="50">
+                    <col>
                     <col>
                     <col>
                     <col>
@@ -50,6 +52,7 @@
                     <th>销售SKU</th>
                     <th>仓库SKU</th>
                     <th>创建时间</th>
+                    <th>最近更新时间</th>
                     <th>运营人员</th>
                     <th class="tc">状态</th>
                     {if condition="$user.super or $user.manage"}
@@ -73,6 +76,7 @@
                     <td>{$v.seller_sku}</td>
                     <td>{:SkuRelationModel::getWarehouseSkuLabelBySSCode($v['ss_code'], $v['wsg_code'])}</td>
                     <td class="tr">{$v.created_time}</td>
+                    <td class="tr">{$v.updated_time}</td>
                     <td>{$v.admin_user.nickname}</td>
                     <td class="tc">
                         {if condition="$v.status eq 0"}
@@ -109,7 +113,7 @@
         let $ = layui.jquery,
             form = layui.form;
 
-        // 测算
+        // 批量审核通过
         form.on('submit(Audit)', function(data){
             let text = $(this).text(),
                 button = $(this);
@@ -118,6 +122,40 @@
                 $('button').attr('disabled',true);
                 button.text('请稍候...');
                 axios.post("{:url('auditAll')}", {data: data.field}, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data' // 设置请求头，确保服务器正确解析 FormData
+                    }
+                })
+                    .then(function (response) {
+                        let res = response.data;
+                        if (res.code === 1) {
+                            layer.alert(res.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c',},function(){
+                                location.reload();
+                            });
+                        } else {
+                            layer.alert(res.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
+                                layer.closeAll();
+                                $('button').attr('disabled',false);
+                                button.text(text);
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                return false;
+            });
+        });
+
+        // 批量审核驳回
+        form.on('submit(Reject)', function(data){
+            let text = $(this).text(),
+                button = $(this);
+            console.log(data);
+            layer.confirm('确定批量审核驳回吗？',{icon:3,closeBtn:0,title:false,btnAlign:'c'},function(){
+                $('button').attr('disabled',true);
+                button.text('请稍候...');
+                axios.post("{:url('rejectAll')}", {data: data.field}, {
                     headers: {
                         'Content-Type': 'multipart/form-data' // 设置请求头，确保服务器正确解析 FormData
                     }
