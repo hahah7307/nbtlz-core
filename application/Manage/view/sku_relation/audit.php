@@ -5,7 +5,7 @@
 <!-- 主体内容 -->
 <div class="layui-body" id="LAY_app_body">
     <div class="right">
-        <div class="title">销售产品s审核列表</div>
+        <div class="title">销售产品审核列表</div>
         <form class="layui-form search-form" method="get">
             <div class="layui-inline w200">
                 <input type="text" class="layui-input" name="keyword" value="{$keyword}">
@@ -19,8 +19,10 @@
         </form>
 
         <div class="layui-form">
+            <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Audit">批量审核</a>
             <table class="layui-table" lay-size="sm">
                 <colgroup>
+                    <col width="50">
                     <col>
                     <col>
                     <col>
@@ -37,6 +39,9 @@
                 </colgroup>
                 <thead>
                 <tr>
+                    <th class="tc">
+                        <input type="checkbox" lay-skin="primary" id="YanNanQiu_checkall" lay-filter="YanNanQiu_checkall">
+                    </th>
                     <th>销售SKU系统编号</th>
                     <th>仓库SKU组系统编号</th>
                     <th>所属平台</th>
@@ -55,6 +60,11 @@
                 <tbody>
                 {foreach name="list" item="v"}
                 <tr>
+                    <td class="tc">
+                        <div class="YanNanQiu_Checkbox">
+                            <input type="checkbox" name="input[]" lay-skin="primary" lay-filter="imgbox" class="YanNanQiu_imgId" value="{$v.ss_code}-{$v.wsg_code}">
+                        </div>
+                    </td>
                     <td>{$v.ss_code}</td>
                     <td>{$v.wsg_code}</td>
                     <td>{$v.platform}</td>
@@ -99,22 +109,38 @@
         let $ = layui.jquery,
             form = layui.form;
 
-        // 状态
-        form.on('switch(formLock)', function(data){
-            $('button').attr('disabled',true);
-            axios.post("{:url('status')}", {id:data.value,type:'look'})
-                .then(function (response) {
-                    let res = response.data;
-                    if (res.code === 0) {
-                        layer.alert(data.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
-                            location.reload();
-                        });
+        // 测算
+        form.on('submit(Audit)', function(data){
+            let text = $(this).text(),
+                button = $(this);
+            console.log(data);
+            layer.confirm('确定批量审核通过吗？',{icon:3,closeBtn:0,title:false,btnAlign:'c'},function(){
+                $('button').attr('disabled',true);
+                button.text('请稍候...');
+                axios.post("{:url('auditAll')}", {data: data.field}, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data' // 设置请求头，确保服务器正确解析 FormData
                     }
                 })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            return false;
+                    .then(function (response) {
+                        let res = response.data;
+                        if (res.code === 1) {
+                            layer.alert(res.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c',},function(){
+                                location.reload();
+                            });
+                        } else {
+                            layer.alert(res.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
+                                layer.closeAll();
+                                $('button').attr('disabled',false);
+                                button.text(text);
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                return false;
+            });
         });
 
         //

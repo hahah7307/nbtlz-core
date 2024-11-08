@@ -520,6 +520,163 @@ class SkuRelationController extends BaseController
      * @throws DbException
      * @throws DataNotFoundException
      */
+    public function auditAll()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->post();
+            if (empty($post['data'])) {
+                echo json_encode(['code' => 0, 'msg' => '请选择你要审核的销售产品']);
+                exit;
+            }
+            $userModel = new AccountModel();
+            $user = $userModel->where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
+
+            Db::startTrans();
+            try {
+                $skuRelationArr = [];
+                foreach ($post['data'] as $item) {
+                    $systemCodes = explode('-', $item);
+                    $ssCode = $systemCodes[0];
+                    $wsgCode = $systemCodes[1];
+
+                    $skuRelationLogValidate = new SkuRelationLogValidate();
+                    $skuRelationModel = new SkuRelationModel();
+                    $skuRelationItemModel = new SkuRelationItemModel();
+                    $skuRelationLogModel = new SkuRelationLogModel();
+                    $skuRelation = $skuRelationModel->where(['ss_code' => $ssCode])->find();
+                    $skuRelationItem = $skuRelationItemModel->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->find();
+                    if ($skuRelationItem['status'] == 0) {
+                        // 新建待审核
+                        if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'status' => 1])) {
+                            if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->update(['status' => 1, 'updated_time' => date('Y-m-d H:i:s')])) {
+                                $skuRelation['items'] = $skuRelationItemModel->where(['ss_code' => $skuRelation['ss_code'], 'wsg_code' => $wsgCode])->select()->toArray();
+                                $skuRelationArr[] = $skuRelation;
+                                // 审核记录
+                                $logData = [
+                                    'seller_sku'    =>  $skuRelation['seller_sku'],
+                                    'ss_code'       =>  $ssCode,
+                                    'wsg_code'      =>  $wsgCode,
+                                    'action'        =>  '审核通过',
+                                    'status'        =>  1,
+                                    'action_user'   =>  $user['nickname'],
+                                    'action_ip'     =>  get_real_ip()
+                                ];
+                                if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                    if (!$skuRelationLogModel->allowField(true)->save($logData)) {
+                                        throw new Exception("审核失败，请重试");
+                                    }
+                                } else {
+                                    throw new Exception($skuRelationLogValidate->getError());
+                                }
+                            } else {
+                                throw new Exception("审核失败，请重试");
+                            }
+                        } else {
+                            throw new Exception("审核失败，请重试");
+                        }
+                    } elseif ($skuRelationItem['status'] == 2) {
+                        // 编辑待审核
+                        $skuRelationItemUpdate_1 = [
+                            'seller_sku'    =>  $skuRelation['seller_sku'] . '-' . mt_rand(100, 999),
+                            'updated_time'  =>  date('Y-m-d H:i:s'),
+                            'status'        =>  4
+                        ];
+                        if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'status' => 1])->update($skuRelationItemUpdate_1)) {
+                            if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'wsg_code' => $wsgCode])) {
+                                $skuRelationItemUpdate_2 = [
+                                    'updated_time'  =>  date('Y-m-d H:i:s'),
+                                    'status'        =>  1
+                                ];
+                                if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $wsgCode])->update($skuRelationItemUpdate_2)) {
+                                    $skuRelation['items'] = $skuRelationItemModel->where(['ss_code' => $skuRelation['ss_code'], 'wsg_code' => $wsgCode])->select()->toArray();
+                                    $skuRelationArr[] = $skuRelation;
+                                    // 审核记录
+                                    $logData = [
+                                        'seller_sku'    =>  $skuRelation['seller_sku'],
+                                        'ss_code'       =>  $ssCode,
+                                        'wsg_code'      =>  $wsgCode,
+                                        'action'        =>  '审核通过',
+                                        'status'        =>  1,
+                                        'action_user'   =>  $user['nickname'],
+                                        'action_ip'     =>  get_real_ip()
+                                    ];
+                                    if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                        if (!$skuRelationLogModel->allowField(true)->save($logData)) {
+                                            throw new Exception("审核失败，请重试");
+                                        }
+                                    } else {
+                                        throw new Exception($skuRelationLogValidate->getError());
+                                    }
+                                } else {
+                                    throw new Exception("审核失败，请重试");
+                                }
+                            } else {
+                                throw new Exception("审核失败，请重试");
+                            }
+                        } else {
+                            throw new Exception("审核失败，请重试");
+                        }
+                    } elseif ($skuRelationItem['status'] == 3) {
+                        // 停用待审核
+                        $skuRelationItemUpdate_1 = [
+                            'seller_sku'    =>  $skuRelation['seller_sku'] . '-' . mt_rand(100, 999),
+                            'updated_time'  =>  date('Y-m-d H:i:s'),
+                            'status'        =>  4
+                        ];
+                        if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'status' => 3])->update($skuRelationItemUpdate_1)) {
+                            if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'status' => 4])) {
+                                // 审核记录
+                                $logData = [
+                                    'seller_sku'    =>  $skuRelation['seller_sku'],
+                                    'ss_code'       =>  $ssCode,
+                                    'wsg_code'      =>  $wsgCode,
+                                    'action'        =>  '审核通过',
+                                    'status'        =>  4,
+                                    'action_user'   =>  $user['nickname'],
+                                    'action_ip'     =>  get_real_ip()
+                                ];
+                                if ($skuRelationLogValidate->scene('add')->check($logData)) {
+                                    if (!$skuRelationLogModel->allowField(true)->save($logData)) {
+                                        throw new Exception("审核失败，请重试");
+                                    }
+                                } else {
+                                    throw new Exception($skuRelationLogValidate->getError());
+                                }
+                            } else {
+                                throw new Exception("审核失败，请重试");
+                            }
+                        } else {
+                            throw new Exception("审核失败，请重试");
+                        }
+                    } else {
+                        throw new Exception("异常操作");
+                    }
+                }
+
+                $res = self::sendSkuRelationAllAuditRequest($skuRelationArr);
+                if (empty($res['code'])) {
+                    throw new Exception($res['data']);
+                }
+
+                Db::commit();
+                echo json_encode(['code' => 1, 'msg' => '操作成功']);
+                exit;
+            } catch (Exception $e) {
+                Db::rollback();
+                echo json_encode(['code' => 0, 'msg' => $e->getMessage()]);
+                exit;
+            }
+        } else {
+            echo json_encode(['code' => 0, 'msg' => '异常操作']);
+            exit;
+        }
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DbException
+     * @throws DataNotFoundException
+     */
     public function reject()
     {
         if ($this->request->isPost()) {
@@ -793,6 +950,37 @@ class SkuRelationController extends BaseController
         ];
 
         return ApiClient::EcWarehouseApi(Config::get("ec_eb_uri"), "modifySkuRelation", json_encode($dataArr));
+    }
+
+    /**
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws \SoapFault
+     */
+    static public function sendSkuRelationAllAuditRequest($skuRelationArr): array
+    {
+        $data = [];
+        foreach ($skuRelationArr as $item) {
+            $pcr = [];
+            foreach ($item['items'] as $i) {
+                $pcr[] = [
+                    'pcr_product_sku'   =>  $i['warehouse_sku'],
+                    'pcr_quantity'      =>  intval($i['qty']),
+                    'pcr_pu_price'      =>  $i['percent'] * intval($i['qty']) * 100000
+                ];
+            }
+
+            $userAccountModel = new UserAccountModel();
+            $userAccount = $userAccountModel->find($item['user_account']);
+            $data['data'][] = [
+                'product_sku'   =>  $item['seller_sku'],
+                'user_account'  =>  [$userAccount['user_account']],
+                'pcr'           =>  $pcr
+            ];
+        }
+
+        return ApiClient::EcWarehouseApi(Config::get("ec_eb_uri"), "modifySkuRelation", json_encode($data));
     }
 
     /**
