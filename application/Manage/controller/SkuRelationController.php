@@ -82,6 +82,14 @@ class SkuRelationController extends BaseController
                 exit;
             }
 
+            $skuRelationModel = new SkuRelationModel();
+            $initRelation = $skuRelationModel->where(['status' => ['lt', 4], 'user_account' => $post['user_account'], 'seller_sku' => $post['seller_sku']])->find();
+            if (count($initRelation) > 0) {
+                echo json_encode(['code' => 0, 'msg' => '销售SKU已存在']);
+                exit;
+            }
+
+
             // 获取操作用户信息
             $userModel = new AccountModel();
             $user = $userModel->where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
@@ -104,7 +112,6 @@ class SkuRelationController extends BaseController
                 // 新增映射关系销售SKU
                 $skuRelationValidate = new SkuRelationValidate();
                 if ($skuRelationValidate->scene('add')->check($skuRelationData)) {
-                    $skuRelationModel = new SkuRelationModel();
                     if ($skuRelationModel->allowField(true)->save($skuRelationData)) {
                         $total = 0;
                         $itemData = [];
