@@ -23,6 +23,7 @@ class ProductUpdate extends Command
      */
     protected function execute(Input $input, Output $output)
     {
+        sleep(60);
         // 加载自定义配置
         Config::load(APP_PATH . 'Manage/config.php');
 
@@ -48,6 +49,9 @@ class ProductUpdate extends Command
                 echo "success";
             } else {
                 $ecProductRes = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "getProductList", '{"page":' . $ecUpdate['page'] . '}');
+                if (empty($ecProductRes['data'])) {
+                    throw new Exception($ecProductRes['msg']);
+                }
                 $ecProductList = $ecProductRes['data'];
                 if (count($ecProductList) <= 0) {
                     ProductUpdateModel::update(['id' => $ecUpdate['id'], 'is_finished' => 1]);
