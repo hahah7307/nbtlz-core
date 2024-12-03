@@ -106,7 +106,8 @@ class SkuRelationController extends BaseController
                     'wsg_code'          =>  $wsgCode,
                     'seller_sku'        =>  $post['seller_sku'],
                     'seller_id'         =>  $user['id'],
-                    'status'            =>  0
+                    'status'            =>  0,
+                    'delivery_type'     =>  $post['delivery_type']
                 ];
 
                 // 新增映射关系销售SKU
@@ -206,7 +207,6 @@ class SkuRelationController extends BaseController
     }
 
     // 编辑
-
     /**
      * @throws DbException
      */
@@ -254,6 +254,14 @@ class SkuRelationController extends BaseController
                     $data['amount'] = $amount;
                     $itemData[] = $data;
                     $total += $amount;
+                }
+
+                $skuRelationModel = new SkuRelationModel();
+                $skuRelation = $skuRelationModel->find($id);
+                if ($skuRelation['warehouse_name'] != $post['warehouse_name'] || $skuRelation['delivery_type'] != $post['delivery_type']) {
+                    if (!$skuRelationModel->update(['warehouse_name' => $post['warehouse_name'], 'delivery_type' => $post['delivery_type']], ['id' => $id])) {
+                        throw new Exception("编辑失败，请重试！");
+                    }
                 }
 
                 $percentSum = 0;
@@ -355,7 +363,7 @@ class SkuRelationController extends BaseController
         $list = $skuRelationModel->alias('a')
             ->distinct(true)
             ->join('nbtlz_sku_relation_item b', 'a.ss_code = b.ss_code', 'LEFT')
-            ->field('b.ss_code, b.wsg_code, a.platform, a.user_account, a.warehouse_name, a.seller_sku, b.created_time, b.updated_time, a.seller_id, b.status')
+            ->field('b.ss_code, b.wsg_code, a.platform, a.user_account, a.warehouse_name, a.seller_sku, b.created_time, b.updated_time, a.seller_id, b.status, a.delivery_type')
             ->where($where)
             ->order('updated_time asc')
             ->paginate(Config::get('PAGE_NUM'), false, ['keyword' => $keyword]);

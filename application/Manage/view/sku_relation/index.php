@@ -39,6 +39,7 @@
                     <col>
                     <col>
                     <col>
+                    <col>
                     <col width="80">
                     <col width="100">
                     <col width="180">
@@ -52,6 +53,7 @@
                     <th>所属仓库</th>
                     <th>销售SKU</th>
                     <th>仓库SKU</th>
+                    <th>发货类型</th>
                     <th>创建时间</th>
                     <th>最后修改时间</th>
                     <th>运营人员</th>
@@ -69,6 +71,7 @@
                     <td>{$v.warehouse_name}</td>
                     <td>{$v.seller_sku}</td>
                     <td>{:SkuRelationModel::getWarehouseSkuLabelBySSCode($v['ss_code'], $v['wsg_code'])}</td>
+                    <td>{$v.delivery_type}</td>
                     <td class="tr">{$v.created_time}</td>
                     <td class="tr">{$v.updated_time}</td>
                     <td>{$v.admin_user.nickname}</td>

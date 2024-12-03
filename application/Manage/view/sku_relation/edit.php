@@ -55,6 +55,13 @@
             <option value="全部仓库" {if condition="$info.warehouse_name eq '全部仓库'"}selected{/if}>全部仓库</option>
         </select>
     </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">发货类型</label>
+        <div class="layui-input-block">
+            <input type="radio" name="delivery_type" value="FBM" title="FBM" {if condition="$info.delivery_type eq 'FBM'"}checked{/if}>
+            <input type="radio" name="delivery_type" value="FBA" title="FBA" {if condition="$info.delivery_type eq 'FBA'"}checked{/if}>
+        </div>
+    </div>
     <input type="hidden" name="ss_code" value="{$info.ss_code}">
 </div>
 <div class="layui-form-item">

@@ -51,6 +51,13 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">发货类型</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="delivery_type" value="FBM" title="FBM" checked>
+                    <input type="radio" name="delivery_type" value="FBA" title="FBA">
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn w200" lay-submit lay-filter="formCoding">提交保存</button>
                 </div>

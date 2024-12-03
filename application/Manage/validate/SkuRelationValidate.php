@@ -17,6 +17,7 @@ class SkuRelationValidate extends Validate
         'created_time'      =>  'require',
         'updated_time'      =>  'require',
         'status'            =>  'require',
+        'delivery_type'     =>  'require',
     ];
 
     protected $message = [
@@ -34,10 +35,11 @@ class SkuRelationValidate extends Validate
         'created_time'      =>  '创建时间',
         'updated_time'      =>  '更新时间',
         'status'            =>  '状态',
+        'delivery_type'     =>  '发货类型',
     ];
 
     protected $scene = [
-        'add'           =>  ['platform', 'user_account', 'warehouse_name', 'ss_code', 'wsg_code', 'seller_sku', 'seller_id', 'status'],
+        'add'           =>  ['platform', 'user_account', 'warehouse_name', 'ss_code', 'wsg_code', 'seller_sku', 'seller_id', 'status', 'delivery_type'],
         'edit'          =>  ['updated_time'],
     ];
 }
