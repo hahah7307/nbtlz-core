@@ -28,8 +28,12 @@
 
         <div class="layui-form">
             <a class="layui-btn" href="{:url('add')}">添加</a>
+            <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Transfer">批量移交</a>
             <table class="layui-table" lay-size="sm">
                 <colgroup>
+                    {if condition="$user.super or $user.manage"}
+                    <col width="50">
+                    {/if}
                     <col>
                     <col>
                     <col>
@@ -46,6 +50,11 @@
                 </colgroup>
                 <thead>
                 <tr>
+                    {if condition="$user.super or $user.manage"}
+                    <th class="tc">
+                        <input type="checkbox" lay-skin="primary" id="YanNanQiu_checkall" lay-filter="YanNanQiu_checkall">
+                    </th>
+                    {/if}
                     <th>销售SKU系统编号</th>
                     <th>仓库SKU组系统编号</th>
                     <th>所属平台</th>
@@ -64,6 +73,13 @@
                 <tbody>
                 {foreach name="list" item="v"}
                 <tr>
+                    {if condition="$user.super or $user.manage"}
+                    <td class="tc">
+                        <div class="YanNanQiu_Checkbox">
+                            <input type="checkbox" name="sku_id[]" lay-skin="primary" lay-filter="imgbox" class="YanNanQiu_imgId" value="{$v.id}">
+                        </div>
+                    </td>
+                    {/if}
                     <td>{$v.ss_code}</td>
                     <td>{$v.wsg_code}</td>
                     <td>{$v.platform}</td>
@@ -108,6 +124,44 @@
     layui.use(['form', 'jquery'], function(){
         let $ = layui.jquery,
             form = layui.form;
+
+        // 批量移交
+        form.on('submit(Transfer)', function(data){
+            let text = $(this).text(),
+                button = $(this);
+            layer.prompt({
+                formType: 0,
+                title: '请输入对方名字',
+                area: ['300px', '150px']
+            }, function(value, index, elem){
+                $('button').attr('disabled',true);
+                button.text('请稍候...');
+                data.field.seller = value;
+                axios.post("{:url('transfer')}", data.field, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data' // 设置请求头，确保服务器正确解析 FormData
+                    }
+                })
+                    .then(function (response) {
+                        let res = response.data;
+                        if (res.code === 1) {
+                            layer.alert(res.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c',},function(){
+                                location.reload();
+                            });
+                        } else {
+                            layer.alert(res.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
+                                layer.closeAll();
+                                $('button').attr('disabled',false);
+                                button.text(text);
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                return false;
+            });
+        });
 
         // 状态
         form.on('switch(formLock)', function(data){

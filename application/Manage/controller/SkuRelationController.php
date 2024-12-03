@@ -61,7 +61,6 @@ class SkuRelationController extends BaseController
     }
 
     // 添加
-
     /**
      * @throws DbException
      * @throws ModelNotFoundException
@@ -1010,6 +1009,51 @@ class SkuRelationController extends BaseController
                 echo json_encode(['code' => 0, 'msg' => $e->getMessage()]);
                 exit;
             }
+        } else {
+            echo json_encode(['code' => 0, 'msg' => '异常操作']);
+            exit;
+        }
+    }
+
+    // 移交
+    /**
+     * @throws DbException
+     */
+    public function transfer()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->post();
+            if (empty($post['sku_id'])) {
+                echo json_encode(['code' => 0, 'msg' => '请选择你要移交的销售产品']);
+                exit();
+            }
+            if (empty($post['seller'])) {
+                echo json_encode(['code' => 0, 'msg' => '请输入对方名字']);
+                exit();
+            }
+            $seller = AccountModel::get(['nickname' => $post['seller'], 'status' => 1]);
+            if (empty($seller)) {
+                echo json_encode(['code' => 0, 'msg' => '你输入的人员不存在或已被禁用']);
+                exit();
+            }
+
+            $model = new SkuRelationModel();
+            Db::startTrans();
+            try {
+                foreach ($post['sku_id'] as $item) {
+                    if (!$model->where(['id' => $item])->setField('seller_id', $seller['id'])) {
+                        throw new Exception("操作失败，请重试");
+                    }
+                }
+
+                Db::commit();
+                echo json_encode(['code' => 1, 'msg' => '操作成功']);
+            } catch (Exception $e) {
+                Db::rollback();
+                echo json_encode(['code' => 0, 'msg' => $e->getMessage()]);
+                exit;
+            }
+            exit;
         } else {
             echo json_encode(['code' => 0, 'msg' => '异常操作']);
             exit;
