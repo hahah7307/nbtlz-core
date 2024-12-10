@@ -158,7 +158,7 @@ class ProductController extends BaseController
 }  
                 ';
                 $rest = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "getProductBarcodeMapList", $jsonString);
-                if ($rest['code'] == 1 && $rest['data']) {
+                if ($rest['code'] == 1) {
                     foreach ($post['warehouse_code'] as $warehouseId) {
                         $warehouseArea = WarehouseAreaModel::where(['warehouse_id' => $warehouseId])->find();
                         $sum = 0;
@@ -173,10 +173,9 @@ class ProductController extends BaseController
                         }
                     }
                 }
-
             }
 
-            if ($warehouseNewId) {
+            if (!empty($warehouseNewId)) {
                 $jsonString2 = '{"data":[' . implode(',', $warehouseNewId) . ']}';
                 $rest2 = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "batchAddProductBarCodeMap", $jsonString2);
                 if ($rest2['code'] == 1) {
