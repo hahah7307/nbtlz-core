@@ -82,7 +82,7 @@ class SkuRelationController extends BaseController
             }
 
             $skuRelationModel = new SkuRelationModel();
-            $initRelation = $skuRelationModel->where(['status' => ['lt', 4], 'user_account' => $post['user_account'], 'seller_sku' => $post['seller_sku']])->find();
+            $initRelation = $skuRelationModel->where(['status' => ['lt', 4], 'user_account' => $post['user_account'], 'seller_sku' => trim($post['seller_sku'])])->find();
             if (count($initRelation) > 0) {
                 echo json_encode(['code' => 0, 'msg' => '销售SKU已存在']);
                 exit;
@@ -103,7 +103,7 @@ class SkuRelationController extends BaseController
                     'warehouse_name'    =>  $post['warehouse_name'],
                     'ss_code'           =>  $ssCode,
                     'wsg_code'          =>  $wsgCode,
-                    'seller_sku'        =>  $post['seller_sku'],
+                    'seller_sku'        =>  trim($post['seller_sku']),
                     'seller_id'         =>  $user['id'],
                     'status'            =>  0,
                     'delivery_type'     =>  $post['delivery_type']
@@ -128,7 +128,7 @@ class SkuRelationController extends BaseController
 
                             $data['ss_code'] = $ssCode;
                             $data['wsg_code'] = $wsgCode;
-                            $data['seller_sku'] = $post['seller_sku'];
+                            $data['seller_sku'] = trim($post['seller_sku']);
                             $data['warehouse_sku'] = $value;
                             $data['qty'] = $post['qty'][$key];
                             $data['status'] = 0;
@@ -163,7 +163,7 @@ class SkuRelationController extends BaseController
 
                         // 新建记录
                         $logData = [
-                            'seller_sku'    =>  $post['seller_sku'],
+                            'seller_sku'    =>  trim($post['seller_sku']),
                             'ss_code'       =>  $ssCode,
                             'wsg_code'      =>  $wsgCode,
                             'action'        =>  '新建',
@@ -245,7 +245,7 @@ class SkuRelationController extends BaseController
 
                     $data['ss_code'] = $ssCode;
                     $data['wsg_code'] = $wsgCode;
-                    $data['seller_sku'] = $post['seller_sku'];
+                    $data['seller_sku'] = trim($post['seller_sku']);
                     $data['warehouse_sku'] = $value;
                     $data['qty'] = $post['qty'][$key];
                     $data['status'] = 2;
@@ -288,7 +288,7 @@ class SkuRelationController extends BaseController
 
                 // 编辑记录
                 $logData = [
-                    'seller_sku'    =>  $post['seller_sku'],
+                    'seller_sku'    =>  trim($post['seller_sku']),
                     'ss_code'       =>  $ssCode,
                     'wsg_code'      =>  $wsgCode,
                     'action'        =>  '编辑',
