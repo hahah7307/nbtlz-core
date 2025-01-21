@@ -668,9 +668,11 @@ class SkuRelationController extends BaseController
                     }
                 }
 
-                $res = self::sendSkuRelationAllAuditRequest($skuRelationArr);
-                if (empty($res['code'])) {
-                    throw new Exception($res['data']);
+                if (!empty($skuRelationArr)) {
+                    $res = self::sendSkuRelationAllAuditRequest($skuRelationArr);
+                    if (empty($res['code'])) {
+                        throw new Exception($res['data']);
+                    }
                 }
 
                 Db::commit();
