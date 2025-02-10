@@ -4,11 +4,21 @@ namespace app\Manage\controller;
 use app\Manage\model\AccountModel;
 use think\Controller;
 use think\Config;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
+use think\Exception;
+use think\exception\DbException;
 use think\Session;
 use think\Request;
 
 class BaseController extends Controller
 {
+    /**
+     * @throws DataNotFoundException
+     * @throws ModelNotFoundException
+     * @throws DbException
+     * @throws Exception
+     */
     public function _initialize()
     {
 		parent::_initialize();
@@ -19,6 +29,7 @@ class BaseController extends Controller
 		} else {
 			$user = AccountModel::where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
 			$this->assign('user', $user);
+            $this->assign('role', AccountModel::account_role());
 		}
 
 		// 加载菜单

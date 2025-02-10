@@ -3,6 +3,9 @@
 namespace app\Manage\model;
 
 use think\Config;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
+use think\Exception;
 use think\exception\DbException;
 use think\Model;
 use think\Session;
@@ -84,6 +87,29 @@ class AccountModel extends Model
             return $userRoleObj->where(['role_id' => $userRole['role_id']])->column('user_id');
         } else {
             return [$account['id']];
+        }
+    }
+
+    /**
+     * @throws ModelNotFoundException
+     * @throws DbException
+     * @throws DataNotFoundException
+     * @throws Exception
+     */
+    static public function account_role(): array
+    {
+        $model = new AccountModel();
+        $user = $model->with('userRole.role')->where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
+        if (!empty($user['user_role'])) {
+            $role = [];
+            foreach ($user['user_role'] as $item) {
+                $role[] = $item['role']['code'];
+            }
+            return $role;
+        } elseif ($user['super'] == 1) {
+            return ['Super'];
+        } else {
+            return ['User'];
         }
     }
 }

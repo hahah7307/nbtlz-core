@@ -29,6 +29,9 @@
                     </a>
                     <dl class="layui-nav-child">
                         <dd><a layui-href="{:url('WarehouseClaimant/index')}">海外仓索赔</a></dd>
+                        {if condition="in_array('Wildberries Seller', $role) or in_array('Wildberries Purchaser', $role) or $user.super"}
+                        <dd><a layui-href="{:url('Wildberries/index')}">Wildberries采购</a></dd>
+                        {/if}
                     </dl>
                 </li>
                 <li data-name="SkuRelation" class="layui-nav-item">
