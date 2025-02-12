@@ -21,8 +21,13 @@ class WildberriesController extends BaseController
             $where['product_name|wb_product_code|wb_order_code|po_no|tracking_no_1|tracking_no_2|color|size'] = ['like', '%' . $keyword . '%'];
         }
 
+        $status = $this->request->get('status', 0, 'intval');
+        $this->assign('status', $status);
+        $where['status'] = $status;
+
+
         $storage = new WildberriesPurchaseModel();
-        $list = $storage->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'));
+        $list = $storage->where($where)->order('id desc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword, 'status' => $status]]);
         $this->assign('list', $list);
         $this->assign('qty', $storage->where($where)->sum('qty'));
         $this->assign('amount', $storage->where($where)->sum('amount'));

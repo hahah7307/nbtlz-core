@@ -53,7 +53,7 @@ class SkuRelationController extends BaseController
 
         // 映射关系列表
         $skuRelationModel = new SkuRelationModel();
-        $list = $skuRelationModel->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'), false, ['keyword' => $keyword, 'status' => $status]);
+        $list = $skuRelationModel->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword, 'status' => $status]]);
         $this->assign('list', $list);
 
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');

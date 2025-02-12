@@ -73,7 +73,7 @@ class WildberriesPurchaseValidate extends Validate
     protected $scene = [
         'add'           =>  ['wb_order_code', 'wb_product_code', 'product_name', 'qty', 'status', 'seller_id'],
         'edit'          =>  ['wb_order_code', 'wb_product_code', 'product_name', 'qty'],
-        'purchase'      =>  ['po_no', 'tracking_no_1', 'purchase_date', 'unit_price', 'amount', 'status', 'purchaser_id'],
+        'purchase'      =>  ['po_no', 'purchase_date', 'unit_price', 'amount', 'status', 'purchaser_id'],
         'ship'          =>  ['tracking_no_2', 'pickup_code']
     ];
 }

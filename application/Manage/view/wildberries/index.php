@@ -2,7 +2,7 @@
 {include file="public/header" /}
 
 <style>
-    .total {padding: 0 20px 0 0}
+    .total {padding: 0 10px 0 10px}
 </style>
 <!-- 主体内容 -->
 <div class="layui-body" id="LAY_app_body">
@@ -12,6 +12,13 @@
             <div class="layui-inline w200">
                 <input type="text" class="layui-input" name="keyword" value="{$keyword}" placeholder="">
             </div>
+            <div class="layui-inline w120">
+                <select name="status" lay-verify="">
+                    <option value="0" {if condition="$status eq 0"}selected{/if}>未采购</option>
+                    <option value="1" {if condition="$status eq 1"}selected{/if}>已采购</option>
+                    <option value="2" {if condition="$status eq 2"}selected{/if}>已取消</option>
+                </select>
+            </div>
             <div class="layui-inline">
                 <button class="layui-btn" lay-submit lay-filter="Search"><i class="layui-icon">&#xe615;</i> 查询</button>
             </div>
@@ -19,7 +26,7 @@
 
         <div class="layui-form">
             <a class="layui-btn" href="{:url('add')}">添加</a>
-            <span class="total">采购数量合计：{$qty|intval}个</span>
+            <span class="total">采购数量合计：{$qty|number_format=###}个</span>
             <span class="total">采购金额合计：{$amount|number_format=###, 2}元</span>
             <table class="layui-table" lay-size="sm">
                 <colgroup>
@@ -85,16 +92,18 @@
                         <p class="blue">未采购</p>
                         {elseif condition="$v.status eq 1"/}
                         <p class="green">已采购</p>
+                        {elseif condition="$v.status eq 2"/}
+                        <p class="red">已取消</p>
                         {/if}
                     </td>
                     <td class="tc">
-                        {if condition="in_array('Wildberries Seller', $role)"}
+                        {if condition="in_array('Wildberries Seller', $role) or $user.super"}
                         <a href="{:url('edit', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">编辑</a>
                         {/if}
-                        {if condition="in_array('Wildberries Purchaser', $role)"}
+                        {if condition="in_array('Wildberries Purchaser', $role) or $user.super"}
                         <a href="{:url('purchase', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">采购</a>
                         {/if}
-                        {if condition="in_array('Wildberries Seller', $role)"}
+                        {if condition="in_array('Wildberries Seller', $role) or $user.super"}
                         <a href="{:url('ship', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">发货</a>
                         <button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-danger ml0" lay-submit lay-filter="Detele">删除</button>
                         {/if}
