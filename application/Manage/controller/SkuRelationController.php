@@ -36,7 +36,13 @@ class SkuRelationController extends BaseController
             if ($userAccount) {
                 $where['user_account'] = $userAccount['id'];
             } else {
-                $where['seller_sku|ss_code|wsg_code|warehouse_name|platform'] = ['like', '%' . $keyword . '%'];
+                $itemModel = new SkuRelationItemModel();
+                $itemList = $itemModel->where(['warehouse_sku' => $keyword])->column('ss_code');
+                if ($itemList) {
+                    $where['ss_code'] = ['in', $itemList];
+                } else {
+                    $where['seller_sku|ss_code|wsg_code|warehouse_name|platform'] = ['like', '%' . $keyword . '%'];
+                }
             }
         }
         $status = $this->request->get('status', 1, 'intval');
