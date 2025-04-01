@@ -19,7 +19,7 @@
 
 		<div class="layui-form">
 			<a class="layui-btn" href="{:url('user_add')}">添加</a>
-			<table class="layui-table">
+			<table class="layui-table" lay-size="sm">
 				<colgroup>
 					<col>
 					<col>
