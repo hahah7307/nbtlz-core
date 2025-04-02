@@ -3,6 +3,12 @@
 
 <style>
     .total {padding: 0 10px 0 10px}
+    .purchase-url {
+        max-width: 150px; /* 限制最大宽度 */
+        white-space: nowrap; /* 不换行 */
+        overflow: hidden; /* 隐藏超出部分 */
+        text-overflow: ellipsis; /* 省略号 */
+    }
 </style>
 <!-- 主体内容 -->
 <div class="layui-body" id="LAY_app_body">
@@ -79,7 +85,7 @@
                     <td>{$v.color}</td>
                     <td>{$v.size}</td>
                     <td>{$v.packaging_requirements}</td>
-                    <td><a href="{$v.purchase_url}" target="_blank">{$v.purchase_url}</a></td>
+                    <td class="purchase-url"><a href="{$v.purchase_url}" target="_blank">{$v.purchase_url}</a></td>
                     <td>{$v.po_no}</td>
                     <td>{$v.tracking_no_1}</td>
                     <td>{$v.tracking_no_2}</td>
