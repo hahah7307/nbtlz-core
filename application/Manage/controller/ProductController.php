@@ -158,6 +158,49 @@ class ProductController extends BaseController
                 } else {
                     echo json_encode(['code' => 0, 'msg' => '数据异常，请重试']);
                 }
+            } elseif ($post['type'] == 3) {
+                $list = array_filter(explode("\n", $post['content']));
+                $string = [];
+                $productList = [];
+                $productModel = new ProductModel();
+                foreach ($list as $item) {
+                    $product = $productModel->where(['productSku' => $item])->find();
+                    if (!empty($product)) {
+                        if ($product['personSellerId'] || $product['personSellerId'] == '0') {
+                            if ($userAdd['user_code'] != 'LJT'
+                                && $userAdd['user_code'] != 'RLY'
+                                && $userAdd['user_code'] != 'HJ'
+                                && $userAdd['user_code'] != 'YCX'
+                                && $userAdd['user_code'] != 'NJJ'
+                            ) {
+
+                                $string[] = '{"actionType":"edit","productSku":"' . $item .'","personSellerId":' . $userAdd['user_id'] . '}';
+                            }
+
+                            $productList[] = ['id' => $product['id'], 'personSellerId' => $userAdd['user_id']];
+                        }
+                    }
+                }
+                $jsonString = implode(',', $string);
+                $rest = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "syncBatchProduct", '[' . $jsonString . ']');
+                if ($rest['code'] == 1) {
+                    $logModel = new ProductEditLogModel();
+                    $user = AccountModel::where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
+                    $data = [
+                        'user_name'     =>  $post['user_name'],
+                        'type'          =>  $post['type'],
+                        'tag'           =>  "syncBatchProduct",
+                        'content'       =>  $post['content'],
+                        'content_json'  =>  '[' . $jsonString . ']',
+                        'created_at'    =>  date('Y-m-d H:i:s'),
+                        'created_id'    =>  $user['id']
+                    ];
+                    $logModel->insert($data);
+                    $productModel->saveAll($productList);
+                    echo json_encode(['code' => 1, 'msg' => '编辑成功']);
+                } else {
+                    echo json_encode(['code' => 0, 'msg' => '数据异常，请重试']);
+                }
             } else {
                 echo json_encode(['code' => 0, 'msg' => '异常操作']);
             }

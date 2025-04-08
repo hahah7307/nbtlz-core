@@ -18,6 +18,7 @@
                     <select name="type" lay-verify="">
                         <option value="1">新增附属销售</option>
                         <option value="2">移出附属销售</option>
+                        <option value="3">编辑主销售</option>
                     </select>
                 </div>
             </div>
