@@ -68,7 +68,13 @@ class ProductController extends BaseController
                             $sellerId = [];
                             foreach ($userList as $userId) {
                                 $user = $userModel->where(['user_id' => $userId])->find();
-                                if ($userAdd['user_code'] != $user['user_code'] && $user['user_code'] != 'LJT') {
+                                if ($userAdd['user_code'] != $user['user_code']
+                                    && $user['user_code'] != 'LJT'
+                                    && $user['user_code'] != 'RLY'
+                                    && $user['user_code'] != 'HJ'
+                                    && $user['user_code'] != 'YCX'
+                                    && $user['user_code'] != 'NJJ'
+                                ) {
                                     $userArr[] = '"' . $user['user_code'] . '"';
                                     $sellerId[] = $user['user_id'];
                                 }
@@ -76,6 +82,57 @@ class ProductController extends BaseController
 
                             $userArr[] = '"' . $userAdd['user_code'] . '"';
                             $sellerId[] = $userAdd['user_id'];
+                            $string[] = '{"actionType":"edit","productSku":"' . $item .'","seller":[' . implode(',', $userArr) . ']}';
+                            $productList[] = ['id' => $product['id'], 'sellerId' => implode(',', $sellerId)];
+                        }
+                    }
+                }
+                $jsonString = implode(',', $string);
+                $rest = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "syncBatchProduct", '[' . $jsonString . ']');
+                if ($rest['code'] == 1) {
+                    $logModel = new ProductEditLogModel();
+                    $user = AccountModel::where(['id'=>Session::get(Config::get('USER_LOGIN_FLAG')), 'status' => AccountModel::STATUS_ACTIVE])->find();
+                    $data = [
+                        'user_name'     =>  $post['user_name'],
+                        'type'          =>  $post['type'],
+                        'tag'           =>  "syncBatchProduct",
+                        'content'       =>  $post['content'],
+                        'content_json'  =>  '[' . $jsonString . ']',
+                        'created_at'    =>  date('Y-m-d H:i:s'),
+                        'created_id'    =>  $user['id']
+                    ];
+                    $logModel->insert($data);
+                    $productModel->saveAll($productList);
+                    echo json_encode(['code' => 1, 'msg' => '编辑成功']);
+                } else {
+                    echo json_encode(['code' => 0, 'msg' => '数据异常，请重试']);
+                }
+            } elseif ($post['type'] == 2) {
+                $list = array_filter(explode("\n", $post['content']));
+                $string = [];
+                $productList = [];
+                $productModel = new ProductModel();
+                foreach ($list as $item) {
+                    $product = $productModel->where(['productSku' => $item])->find();
+                    if (!empty($product)) {
+                        if ($product['sellerId'] || $product['sellerId'] == '0') {
+                            $userList = array_filter(explode(",", $product['sellerId']));
+                            $userArr = [];
+                            $sellerId = [];
+                            foreach ($userList as $userId) {
+                                $user = $userModel->where(['user_id' => $userId])->find();
+                                if ($userAdd['user_code'] != $user['user_code']
+                                    && $user['user_code'] != 'LJT'
+                                    && $user['user_code'] != 'RLY'
+                                    && $user['user_code'] != 'HJ'
+                                    && $user['user_code'] != 'YCX'
+                                    && $user['user_code'] != 'NJJ'
+                                ) {
+                                    $userArr[] = '"' . $user['user_code'] . '"';
+                                    $sellerId[] = $user['user_id'];
+                                }
+                            }
+
                             $string[] = '{"actionType":"edit","productSku":"' . $item .'","seller":[' . implode(',', $userArr) . ']}';
                             $productList[] = ['id' => $product['id'], 'sellerId' => implode(',', $sellerId)];
                         }
