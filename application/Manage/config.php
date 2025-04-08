@@ -71,6 +71,6 @@ return [
 
     'ec_wms_uri'                =>  'https://nt5e7hf.eccang.com/default/svc-open/web-service-v2',
     'ec_eb_uri'                 =>  'http://nt5e7hf-eb.eccang.com/default/svc-open/web-service-v2',
-    'ec_warehouse_username'     =>  'NJJ',
-    'ec_warehouse_userpass'     =>  'alex02081888',
+    'ec_warehouse_username'     =>  'HQJL',
+    'ec_warehouse_userpass'     =>  'WBBwala361@16',
 ];

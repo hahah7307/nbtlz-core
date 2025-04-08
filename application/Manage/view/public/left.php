@@ -42,6 +42,7 @@
                     <dl class="layui-nav-child">
                         <dd><a layui-href="{:url('SkuRelation/index')}">销售产品</a></dd>
                         <dd><a layui-href="{:url('SkuRelation/audit')}">销售产品审核</a></dd>
+                        <dd><a layui-href="{:url('Seller/index')}">平台货号</a></dd>
                     </dl>
                 </li>
                 <li data-name="SkuRelation" class="layui-nav-item">

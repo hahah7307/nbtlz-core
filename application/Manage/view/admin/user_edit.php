@@ -50,6 +50,12 @@
 					<input type="text" class="layui-input" name="repassword" placeholder="请填写重复密码">
 				</div>
 			</div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">运营代码</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="user_code" placeholder="请填写运营代码">
+                </div>
+            </div>
 			<div class="layui-form-item">
 				<div class="layui-input-block">
 					<button class="layui-btn w200" lay-submit lay-filter="formCoding">提交保存</button>

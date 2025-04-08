@@ -7,18 +7,30 @@
 		<a href="{:url('index')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
         <div class="title">仓库编辑</div>
 		<div class="layui-form">
-			<div class="layui-form-item">
-				<label class="layui-form-label">店铺名称</label>
-				<div class="layui-input-inline w300">
-					<input type="text" class="layui-input" name="user_account" value="{$info.user_account}" placeholder="请填写店铺名称">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">所属平台</label>
-				<div class="layui-input-inline w300">
-					<input type="text" class="layui-input" name="platform" value="{$info.platform}" placeholder="请填写所属平台">
-				</div>
-			</div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺标识</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="user_account" value="{$info.user_account}" placeholder="请填写店铺标识">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺全称</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="user_account_name" value="{$info.user_account_name}" placeholder="请填写店铺全称">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺简写</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="user_account_code" value="{$info.user_account_code}" placeholder="请填写店铺简写">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属平台</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="platform" value="{$info.platform}" placeholder="请填写所属平台">
+                </div>
+            </div>
 			<div class="layui-form-item">
 				<div class="layui-input-block">
 					<button class="layui-btn w200" lay-submit lay-filter="formCoding">提交保存</button>

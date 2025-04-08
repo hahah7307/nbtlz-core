@@ -8,9 +8,21 @@
         <div class="title">添加店铺</div>
         <div class="layui-form">
             <div class="layui-form-item">
-                <label class="layui-form-label">店铺名称</label>
+                <label class="layui-form-label">店铺标识</label>
                 <div class="layui-input-inline w300">
-                    <input type="text" class="layui-input" name="user_account" placeholder="请填写店铺名称">
+                    <input type="text" class="layui-input" name="user_account" placeholder="请填写店铺标识">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺全称</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="user_account_name" placeholder="请填写店铺全称">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺简写</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="user_account_code" placeholder="请填写店铺简写">
                 </div>
             </div>
             <div class="layui-form-item">

@@ -23,13 +23,17 @@
                 <colgroup>
                     <col width="50">
                     <col>
+                    <col>
+                    <col>
                     <col width="100">
                     <col width="180">
                 </colgroup>
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>店铺名</th>
+                    <th>店铺标识</th>
+                    <th>店铺全称</th>
+                    <th>店铺简写</th>
                     <th>所属平台</th>
                     <th class="tc">操作</th>
                 </tr>
@@ -39,6 +43,8 @@
                 <tr>
                     <td class="tr">{$v.id}</td>
                     <td>{$v.user_account}</td>
+                    <td>{$v.user_account_name}</td>
+                    <td>{$v.user_account_code}</td>
                     <td>{$v.platform}</td>
                     <td class="tc">
                         <a href="{:url('seller_access', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">配置</a>
