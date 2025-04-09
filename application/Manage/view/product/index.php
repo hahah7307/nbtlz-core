@@ -13,7 +13,7 @@
                 <button class="layui-btn" lay-submit lay-filter="Search"><i class="layui-icon">&#xe615;</i> 查询</button>
             </div>
             <div class="layui-inline">
-                <a class="layui-btn layui-btn-normal" href="{:url('index')}"><i class="layui-icon">&#xe621;</i> 重置</a>
+                <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="Copy"><i class="layui-icon">&#xe621;</i> 复制</button>
             </div>
         </form>
 
@@ -65,6 +65,34 @@
     layui.use(['form', 'jquery'], function(){
         let $ = layui.jquery,
             form = layui.form;
+
+        // 复制
+        form.on('submit(Copy)', function(data){
+            const text = `{$skuAll}`;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';  // 防止页面跳动
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+
+            textarea.focus();
+            textarea.select();
+
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    layer.msg('复制成功', {icon: 6});
+                } else {
+                    layer.msg('复制失败，请手动复制', {icon: 5});
+                }
+            } catch (err) {
+                layer.msg('复制失败，请手动复制', {icon: 5});
+            }
+
+            document.body.removeChild(textarea);
+
+            return false;
+        });
 
         // 状态
         form.on('switch(formLock)', function(data){

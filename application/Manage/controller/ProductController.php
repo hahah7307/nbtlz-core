@@ -23,13 +23,20 @@ class ProductController extends BaseController
         $where = [];
         $keyword = $this->request->get('keyword', '', 'htmlspecialchars');
         $this->assign('keyword', $keyword);
+        $whereOrArr = [];
         if ($keyword) {
-            $where['productSku'] = ['like', '%' . $keyword . '%'];
+            $skuList = array_filter(explode(" ", $keyword));
+            foreach ($skuList as $item) {
+                $whereOrArr[] = 'productSku like "%' . $item . '%"';
+            }
+            $where = implode(' OR ', $whereOrArr);
         }
 
-        $storage = new ProductModel();
-        $list = $storage->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword]]);
+        $product = new ProductModel();
+        $skuAllList = $product->where($where)->order('id asc')->column('productSku');
+        $list = $product->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword]]);
         $this->assign('list', $list);
+        $this->assign('skuAll', implode("\n", $skuAllList));
 
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');
         return view();
