@@ -81,6 +81,7 @@ class ProductController extends BaseController
                                     && $user['user_code'] != 'HJ'
                                     && $user['user_code'] != 'YCX'
                                     && $user['user_code'] != 'NJJ'
+                                    && $user['user_code'] != 'LY'
                                 ) {
                                     $userArr[] = '"' . $user['user_code'] . '"';
                                     $sellerId[] = $user['user_id'];
@@ -134,6 +135,7 @@ class ProductController extends BaseController
                                     && $user['user_code'] != 'HJ'
                                     && $user['user_code'] != 'YCX'
                                     && $user['user_code'] != 'NJJ'
+                                    && $user['user_code'] != 'LY'
                                 ) {
                                     $userArr[] = '"' . $user['user_code'] . '"';
                                     $sellerId[] = $user['user_id'];
@@ -179,6 +181,7 @@ class ProductController extends BaseController
                                 && $userAdd['user_code'] != 'HJ'
                                 && $userAdd['user_code'] != 'YCX'
                                 && $userAdd['user_code'] != 'NJJ'
+                                && $userAdd['user_code'] != 'LY'
                             ) {
 
                                 $string[] = '{"actionType":"edit","productSku":"' . $item .'","personSellerId":' . $userAdd['user_id'] . '}';
