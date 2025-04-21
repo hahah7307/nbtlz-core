@@ -28,20 +28,30 @@ class SkuRelationController extends BaseController
     public function index(): \think\response\View
     {
         $where = [];
+        $whereAll = [];
         $keyword = $this->request->get('keyword', '', 'htmlspecialchars');
         $this->assign('keyword', $keyword);
         if ($keyword) {
-            $userAccountModel = new UserAccountModel();
-            $userAccount = $userAccountModel->where(['user_account' => $keyword])->find();
-            if ($userAccount) {
-                $where['user_account'] = $userAccount['id'];
+            $skuList = array_filter(explode(" ", $keyword));
+            if (count($skuList)) {
+                $whereOrArr = [];
+                foreach ($skuList as $item) {
+                    $whereOrArr[] = 'seller_sku = "' . $item . '"';
+                }
+                $whereAll = implode(' OR ', $whereOrArr);
             } else {
-                $itemModel = new SkuRelationItemModel();
-                $itemList = $itemModel->where(['warehouse_sku' => $keyword])->column('ss_code');
-                if ($itemList) {
-                    $where['ss_code'] = ['in', $itemList];
+                $userAccountModel = new UserAccountModel();
+                $userAccount = $userAccountModel->where(['user_account' => $keyword])->find();
+                if ($userAccount) {
+                    $where['user_account'] = $userAccount['id'];
                 } else {
-                    $where['seller_sku|ss_code|wsg_code|warehouse_name|platform'] = ['like', '%' . $keyword . '%'];
+                    $itemModel = new SkuRelationItemModel();
+                    $itemList = $itemModel->where(['warehouse_sku' => $keyword])->column('ss_code');
+                    if ($itemList) {
+                        $where['ss_code'] = ['in', $itemList];
+                    } else {
+                        $where['seller_sku|ss_code|wsg_code|warehouse_name|platform'] = ['like', '%' . $keyword . '%'];
+                    }
                 }
             }
         }
@@ -59,7 +69,7 @@ class SkuRelationController extends BaseController
 
         // 映射关系列表
         $skuRelationModel = new SkuRelationModel();
-        $list = $skuRelationModel->where($where)->order('id asc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword, 'status' => $status]]);
+        $list = $skuRelationModel->where($where)->where($whereAll)->order('id asc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword, 'status' => $status]]);
         $this->assign('list', $list);
 
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');
