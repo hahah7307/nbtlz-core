@@ -10,14 +10,6 @@
             <div class="layui-inline w200">
                 <input type="text" class="layui-input" name="keyword" value="{$keyword}">
             </div>
-            <div class="layui-inline w120">
-                <select name="status" lay-verify="">
-                    <option value="">状态</option>
-                    <option value="1" {if condition="$status eq 1"}selected{/if}>使用中</option>
-                    <option value="4" {if condition="$status eq 4"}selected{/if}>已停用</option>
-                    <option value="5" {if condition="$status eq 5"}selected{/if}>已驳回</option>
-                </select>
-            </div>
             <div class="layui-inline">
                 <button class="layui-btn" lay-submit lay-filter="Search"><i class="layui-icon">&#xe615;</i> 查询</button>
             </div>
@@ -28,15 +20,8 @@
 
         <div class="layui-form">
             <a class="layui-btn" href="{:url('add')}">新建</a>
-            <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Transfer">批量移交</a>
             <table class="layui-table" lay-size="sm">
                 <colgroup>
-                    {if condition="$user.super or $user.manage"}
-                    <col width="50">
-                    {/if}
-                    <col>
-                    <col>
-                    <col>
                     <col>
                     <col>
                     <col>
@@ -45,72 +30,30 @@
                     <col>
                     <col>
                     <col width="80">
-                    <col width="100">
-                    <col width="180">
                 </colgroup>
                 <thead>
                 <tr>
-                    {if condition="$user.super or $user.manage"}
-                    <th class="tc">
-                        <input type="checkbox" lay-skin="primary" id="YanNanQiu_checkall" lay-filter="YanNanQiu_checkall">
-                    </th>
-                    {/if}
-                    <th>销售SKU系统编号</th>
-                    <th>仓库SKU组系统编号</th>
                     <th>所属平台</th>
                     <th>所属店铺</th>
-                    <th>所属仓库</th>
+                    <th>所属品牌</th>
+                    <th>颜色</th>
+                    <th>季度代码</th>
                     <th>销售SKU</th>
-                    <th>仓库SKU</th>
-                    <th>发货类型</th>
                     <th>创建时间</th>
-                    <th>最后修改时间</th>
                     <th>运营人员</th>
-                    <th class="tc">状态</th>
-                    <th class="tc">操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 {foreach name="list" item="v"}
                 <tr>
-                    {if condition="$user.super or $user.manage"}
-                    <td class="tc">
-                        <div class="YanNanQiu_Checkbox">
-                            <input type="checkbox" name="sku_id[]" lay-skin="primary" lay-filter="imgbox" class="YanNanQiu_imgId" value="{$v.id}">
-                        </div>
-                    </td>
-                    {/if}
-                    <td>{$v.ss_code}</td>
-                    <td>{$v.wsg_code}</td>
                     <td>{$v.platform}</td>
                     <td>{$v.user.user_account}</td>
-                    <td>{$v.warehouse_name}</td>
+                    <td>{$v.brand}</td>
+                    <td>{$v.color}</td>
+                    <td>{$v.season}</td>
                     <td>{$v.seller_sku}</td>
-                    <td>{:SkuRelationModel::getWarehouseSkuLabelBySSCode($v['ss_code'], $v['wsg_code'])}</td>
-                    <td>{$v.delivery_type}</td>
                     <td class="tr">{$v.created_time}</td>
-                    <td class="tr">{$v.updated_time}</td>
                     <td>{$v.admin_user.nickname}</td>
-                    <td class="tc">
-                        {if condition="$v.status eq 0"}
-                            <p class="blue">新建待审核</p>
-                        {elseif condition="$v.status eq 1"/}
-                            <p class="green">使用中</p>
-                        {elseif condition="$v.status eq 2"/}
-                            <p class="blue">编辑待审核</p>
-                        {elseif condition="$v.status eq 3"/}
-                            <p class="blue">停用待审核</p>
-                        {elseif condition="$v.status eq 4"/}
-                            <p class="red">已停用</p>
-                        {elseif condition="$v.status eq 5"/}
-                            <p class="orange">已驳回</p>
-                        {/if}
-                    </td>
-                    <td class="tc">
-                        <a href="{:url('log', ['ssCode' => $v.ss_code])}" class="layui-btn layui-btn-sm">日志</a>
-                        {if condition="$v.status eq 1"}<a href="{:url('edit', ['id' => $v.id])}" class="layui-btn layui-btn-normal layui-btn-sm">编辑</a>{/if}
-                        {if condition="$v.status eq 1"}<button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-danger ml0" lay-submit lay-filter="Detele">停用</button>{/if}
-                    </td>
                 </tr>
                 {/foreach}
                 </tbody>

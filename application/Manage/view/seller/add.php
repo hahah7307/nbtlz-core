@@ -25,10 +25,10 @@
                     </select>
                 </div>
             </div>
-            <div class="layui-form-item">
+            <div class="layui-form-item" id="brand">
                 <label class="layui-form-label">所属品牌</label>
                 <div class="layui-input-block w300"">
-                    <select name="platform">
+                    <select name="brand">
                         <option value=""></option>
                         {foreach name="brand" item="vb"}
                         <option value="{$vb.brand_code}">{$vb.brand_name}</option>
@@ -39,55 +39,23 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">产品颜色</label>
                 <div class="layui-input-block w300"">
-                    <select name="platform">
+                    <select name="color">
                         <option value=""></option>
                         {foreach name="color" item="vc"}
-                        <option value="{$vc.color_code}">{$vc.color_name}({$vc.color_code})</option>
+                        <option value="{$vc.color_code}">{$vc.color_code}({$vc.color_name})</option>
                         {/foreach}
                     </select>
                 </div>
             </div>
-            <div class="layui-form-item">
+            <div class="layui-form-item" id="season" style="display: none">
                 <label class="layui-form-label">季度代码</label>
                 <div class="layui-input-block w300"">
-                    <select name="platform">
+                    <select name="season">
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="C">C</option>
                         <option value="D">D</option>
                     </select>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">销售SKU</label>
-                <div class="layui-input-inline w300">
-                    <input type="text" class="layui-input" name="seller_sku" placeholder="请填写销售SKU">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">仓库SKU</label>
-                <div class="layui-input-inline w300">
-                    <input type="text" class="layui-input" name="warehouse_sku[]" placeholder="请填写仓库SKU">
-                </div>
-                <label class="layui-form-label">产品数量</label>
-                <div class="layui-input-inline w300">
-                    <input type="text" class="layui-input" name="qty[]" placeholder="请填写产品数量">
-                </div>
-                <button class="layui-btn layui-btn-sm btn-lc" lay-submit lay-filter="AttrAdd">添加</button>
-            </div>
-            <div class="layui-form-item" id="sub-dom">
-                <label class="layui-form-label">仓库名称</label>
-                <div class="layui-input-block w300"">
-                    <select name="warehouse_name" lay-filter="platform">
-                        <option value="全部仓库">全部仓库</option>
-                    </select>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">发货类型</label>
-                <div class="layui-input-block">
-                    <input type="radio" name="delivery_type" value="FBM" title="FBM" checked>
-                    <input type="radio" name="delivery_type" value="FBA" title="FBA">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -130,6 +98,27 @@
                             option += '<option value="' + value.id + '">' + value.user_account + '</option>';
                         })
                         $('#user_account').append(option);
+
+                        if (data.value == "wayfair") {
+                            $("#season").show();
+                            $("#brand").hide();
+                        } else if (data.value == "walmart") {
+                            $("#season").show();
+                            $("#brand").hide();
+                        } else if (data.value == "temu") {
+                            $("#season").show();
+                            $("#brand").hide();
+                        } else if (data.value == "shein") {
+                            $("#season").show();
+                            $("#brand").hide();
+                        } else if (data.value == "tiktok") {
+                            $("#brand").hide();
+                        } else if (data.value == "ebay") {
+                            $("#brand").hide();
+                        } else {
+                            $("#season").hide();
+                            $("#brand").show();
+                        }
                         form.render('select');
                     } else {
                         layer.alert(res.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
