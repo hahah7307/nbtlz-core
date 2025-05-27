@@ -42,6 +42,7 @@
                     <dl class="layui-nav-child">
                         <dd><a layui-href="{:url('SkuRelation/index')}">销售产品</a></dd>
                         <dd><a layui-href="{:url('SkuRelation/audit')}">销售产品审核</a></dd>
+                        <dd><a layui-href="{:url('Echarts/index')}">美国各州销量热力图</a></dd>
                         <dd><a layui-href="{:url('Seller/index')}">平台货号</a></dd>
                         <dd><a layui-href="{:url('Order/save')}">订单留存</a></dd>
                     </dl>
