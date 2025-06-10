@@ -181,6 +181,34 @@ class SellerController extends BaseController
                         'created_date'      =>  date('Ymd'),
                         'seller_id'         =>  $user['id']
                     ];
+                } elseif ($post['user_account'] == 45) {
+                    // WAL_Tingyu_US
+                    $sellerSku = 'WLM' . $user['user_code'] . 'TY' . date('Y') . sprintf("%03d", $index) . $post['color'];
+
+                    $addData = [
+                        'seller_sku'        =>  $sellerSku,
+                        'platform'          =>  $post['platform'],
+                        'user_account'      =>  $post['user_account'],
+                        'index'             =>  sprintf("%03d", $index),
+                        'color'             =>  $post['color'],
+                        'created_time'      =>  date('Y-m-d H:i:s'),
+                        'created_date'      =>  date('Ymd'),
+                        'seller_id'         =>  $user['id']
+                    ];
+                } elseif ($post['user_account'] == 46) {
+                    // WAL_Shanli_US
+                    $sellerSku = 'SL' . 'WLM' . $user['user_code'] . date('Ym') . sprintf("%03d", $index) . $post['color'];
+
+                    $addData = [
+                        'seller_sku'        =>  $sellerSku,
+                        'platform'          =>  $post['platform'],
+                        'user_account'      =>  $post['user_account'],
+                        'index'             =>  sprintf("%03d", $index),
+                        'color'             =>  $post['color'],
+                        'created_time'      =>  date('Y-m-d H:i:s'),
+                        'created_date'      =>  date('Ymd'),
+                        'seller_id'         =>  $user['id']
+                    ];
                 } else {
                     echo json_encode(['code' => 0, 'msg' => '异常操作']);
                     exit;
