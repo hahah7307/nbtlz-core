@@ -3,6 +3,8 @@ namespace app\Manage\controller;
 
 use app\Manage\model\WildberriesPurchaseModel;
 use app\Manage\validate\WildberriesPurchaseValidate;
+use Exception;
+use think\Db;
 use think\exception\DbException;
 use think\Session;
 use think\Config;
@@ -23,11 +25,17 @@ class WildberriesController extends BaseController
 
         $status = $this->request->get('status', 0, 'intval');
         $this->assign('status', $status);
-        $where['status'] = $status;
 
+        $is_shipping = $this->request->get('is_shipping', '');
+        $this->assign('is_shipping', $is_shipping);
+        if ($is_shipping == '') {
+            $where['status'] = $status;
+        } else {
+            $where['is_shipping'] = $is_shipping;
+        }
 
         $storage = new WildberriesPurchaseModel();
-        $list = $storage->where($where)->order('id desc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword, 'status' => $status]]);
+        $list = $storage->where($where)->order('id desc')->paginate(Config::get('PAGE_NUM'), false, ['query' => ['keyword' => $keyword, 'status' => $status, 'is_shipping' => $is_shipping]]);
         $this->assign('list', $list);
         $this->assign('qty', $storage->where($where)->sum('qty'));
         $this->assign('amount', $storage->where($where)->sum('amount'));
@@ -147,6 +155,7 @@ class WildberriesController extends BaseController
             }
 
             $post = $this->request->post();
+            $post['is_shipping'] = 1;
             $dataValidate = new WildberriesPurchaseValidate();
             if ($dataValidate->scene('ship')->check($post)) {
                 $model = new WildberriesPurchaseModel();
@@ -186,6 +195,37 @@ class WildberriesController extends BaseController
                 echo json_encode(['code' => 1, 'msg' => '操作成功']);
             } else {
                 echo json_encode(['code' => 0, 'msg' => '操作失败，请重试']);
+            }
+            exit;
+        } else {
+            echo json_encode(['code' => 0, 'msg' => '异常操作']);
+            exit;
+        }
+    }
+
+    // 发货
+    /**
+     */
+    public function shipping()
+    {
+        if ($this->request->isPost()) {
+            $post = $this->request->post();
+
+            $model = new WildberriesPurchaseModel();
+            Db::startTrans();
+            try {
+                foreach ($post as $item) {
+                    if (!$model->where(['id' => $item])->setField('is_shipping', 1)) {
+                        throw new Exception("操作失败，请重试");
+                    }
+                }
+
+                Db::commit();
+                echo json_encode(['code' => 1, 'msg' => '操作成功']);
+            } catch (Exception $e) {
+                Db::rollback();
+                echo json_encode(['code' => 0, 'msg' => $e->getMessage()]);
+                exit;
             }
             exit;
         } else {

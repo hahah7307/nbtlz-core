@@ -25,6 +25,13 @@
                     <option value="2" {if condition="$status eq 2"}selected{/if}>已取消</option>
                 </select>
             </div>
+            <div class="layui-inline w120">
+                <select name="is_shipping" lay-verify="">
+                    <option value="" {if condition="$is_shipping eq ''"}selected{/if}>请选择</option>
+                    <option value="0" {if condition="$is_shipping eq '0'"}selected{/if}>未发货</option>
+                    <option value="1" {if condition="$is_shipping eq '1'"}selected{/if}>已发货</option>
+                </select>
+            </div>
             <div class="layui-inline">
                 <button class="layui-btn" lay-submit lay-filter="Search"><i class="layui-icon">&#xe615;</i> 查询</button>
             </div>
@@ -32,10 +39,16 @@
 
         <div class="layui-form">
             <a class="layui-btn" href="{:url('add')}">添加</a>
+            {if condition="in_array('Wildberries Seller', $role) or $user.super"}
+            <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Shipping">已发货</a>
+            {/if}
             <span class="total">采购数量合计：{$qty|number_format=###}个</span>
             <span class="total">采购金额合计：{$amount|number_format=###, 2}元</span>
             <table class="layui-table" lay-size="sm">
                 <colgroup>
+                    {if condition="in_array('Wildberries Seller', $role) or $user.super"}
+                    <col width="50">
+                    {/if}
                     <col>
                     <col>
                     <col>
@@ -56,6 +69,11 @@
                 </colgroup>
                 <thead>
                 <tr>
+                    {if condition="in_array('Wildberries Seller', $role) or $user.super"}
+                    <th class="tc">
+                        <input type="checkbox" lay-skin="primary" id="YanNanQiu_checkall" lay-filter="YanNanQiu_checkall">
+                    </th>
+                    {/if}
                     <th>WB订单号</th>
                     <th>WB产品编号</th>
                     <th>产品名称</th>
@@ -78,6 +96,13 @@
                 <tbody>
                 {foreach name="list" item="v"}
                 <tr>
+                    {if condition="in_array('Wildberries Seller', $role) or $user.super"}
+                    <td class="tc">
+                        <div class="YanNanQiu_Checkbox">
+                            <input type="checkbox" name="id[]" lay-skin="primary" lay-filter="imgbox" class="YanNanQiu_imgId" value="{$v.id}">
+                        </div>
+                    </td>
+                    {/if}
                     <td>{$v.wb_order_code}</td>
                     <td>{$v.wb_product_code}</td>
                     <td>{$v.product_name}</td>
@@ -137,6 +162,36 @@
                 $('button').attr('disabled',true);
                 button.text('请稍候...');
                 axios.post("{:url('delete')}", {id:id})
+                    .then(function (response) {
+                        let res = response.data;
+                        if (res.code === 1) {
+                            layer.alert(res.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c',},function(){
+                                location.reload();
+                            });
+                        } else {
+                            layer.alert(res.msg,{icon:2,closeBtn:0,title:false,btnAlign:'c'},function(){
+                                layer.closeAll();
+                                $('button').attr('disabled',false);
+                                button.text(text);
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                return false;
+            });
+        });
+
+        // 发货
+        form.on('submit(Shipping)', function(data){
+            let text = $(this).text(),
+                button = $(this),
+                id = $(this).data('id');
+            layer.confirm('确定已发货吗？',{icon:3,closeBtn:0,title:false,btnAlign:'c'},function(){
+                $('button').attr('disabled',true);
+                button.text('请稍候...');
+                axios.post("{:url('shipping')}", data.field)
                     .then(function (response) {
                         let res = response.data;
                         if (res.code === 1) {
