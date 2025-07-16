@@ -40,7 +40,7 @@
         <div class="layui-form">
             <a class="layui-btn" href="{:url('add')}">添加</a>
             {if condition="in_array('Wildberries Seller', $role) or $user.super"}
-            <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Shipping">已发货</a>
+            <a class="layui-btn layui-btn-normal" lay-submit lay-filter="Shipping">标记发货</a>
             {/if}
             <span class="total">采购数量合计：{$qty|number_format=###}个</span>
             <span class="total">采购金额合计：{$amount|number_format=###, 2}元</span>
