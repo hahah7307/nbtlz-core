@@ -2,21 +2,11 @@
 namespace app\Manage\controller;
 
 use app\Manage\model\AccountModel;
-use app\Manage\model\ApiClient;
-use app\Manage\model\ProductModel;
 use app\Manage\model\SellerSkuBrandModel;
 use app\Manage\model\SellerSkuColorModel;
 use app\Manage\model\SellerSkuModel;
-use app\Manage\model\SkuRelationItemModel;
-use app\Manage\model\SkuRelationLogModel;
-use app\Manage\model\SkuRelationModel;
 use app\Manage\model\UserAccountAccessModel;
 use app\Manage\model\UserAccountModel;
-use app\Manage\validate\SkuRelationItemValidate;
-use app\Manage\validate\SkuRelationLogValidate;
-use app\Manage\validate\SkuRelationValidate;
-use Exception;
-use think\Db;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
 use think\exception\DbException;
@@ -75,8 +65,8 @@ class SellerController extends BaseController
             $userAccountModel = new UserAccountModel();
             $userAccountCode = $userAccountModel->where(['id' => $post['user_account']])->value('user_account_code');
 
-            if (empty($post['color'])) {
-                echo json_encode(['code' => 0, 'msg' => '请选择颜色']);
+            if (empty($post['warehouse_sku'])) {
+                echo json_encode(['code' => 0, 'msg' => '请填写仓库SKU(其中一个)']);
                 exit;
             }
 
@@ -92,19 +82,48 @@ class SellerController extends BaseController
                 ->find();
             $index = empty($lastOne) ? 1 : intval($lastOne['index']) + 1;
 
+            $brand = '';
+            $sellerSku = '';
+            $color = self::warehouseSkuToColor($post['warehouse_sku']);
+
             // 销售sku逻辑
             if ($post['platform'] == "amazon") {
-                if (empty($post['brand'])) {
-                    echo json_encode(['code' => 0, 'msg' => '请选择品牌']);
-                    exit;
+                if ($post['user_account'] == 1) {
+                    $brand = 'VA';
+                    $sellerSku = $brand . sprintf("%03d", $index) . $user['user_code'];
+                } elseif ($post['user_account'] == 3) {
+                    $brand = 'XL';
+                    $sellerSku = $brand . sprintf("%03d", $index) . $user['user_code'] . 'XKF';
+                } elseif ($post['user_account'] == 4) {
+                    $sellerSku = $user['user_code'] . 'TLD' . sprintf("%03d", $index);
+                } elseif ($post['user_account'] == 5) {
+                    $sellerSku = date('Y') . $user['user_code'] . sprintf("%03d", $index) . 'FW';
+                } elseif ($post['user_account'] == 6) {
+                    $sellerSku = $user['user_code'] . sprintf("%03d", $index) . 'TW';
+                } elseif ($post['user_account'] == 7) {
+                    $brand = 'TD';
+                    $sellerSku = $brand . sprintf("%03d", $index) . $color . $user['user_code'];
+                } elseif ($post['user_account'] == 8) {
+                    $sellerSku = 'MU' . sprintf("%03d", $index) . $color . $user['user_code'];
+                } elseif ($post['user_account'] == 9) {
+                    $sellerSku = date('Y') . 'GL' . sprintf("%03d", $index) . $user['user_code'];
+                } elseif ($post['user_account'] == 10) {
+                    $sellerSku = 'MC' . date('Y') . sprintf("%03d", $index) . $user['user_code'];
+                } elseif ($post['user_account'] == 12) {
+                    $sellerSku = $user['user_code'] . date('Y') . sprintf("%03d", $index) . $color;
+                } elseif ($post['user_account'] == 13) {
+                    $sellerSku = 'LLC' . $user['user_code'] . 'TD' . sprintf("%03d", $index);
+                } elseif ($post['user_account'] == 14) {
+                    $sellerSku = 'SCC' . sprintf("%03d", $index) . $user['user_code'] . date('Y');
+                } elseif ($post['user_account'] == 28) {
+                    $sellerSku = $user['user_code'] . sprintf("%03d", $index) . 'YT' . date('Y');
                 }
-                $sellerSku = $userAccountCode . $post['brand'] . $user['user_code'] . sprintf("%03d", $index) . $post['color'];
 
                 $addData = [
                     'seller_sku'        =>  $sellerSku,
                     'platform'          =>  $post['platform'],
                     'user_account'      =>  $post['user_account'],
-                    'brand'             =>  $post['brand'],
+                    'brand'             =>  $brand,
                     'index'             =>  sprintf("%03d", $index),
                     'color'             =>  $post['color'],
                     'created_time'      =>  date('Y-m-d H:i:s'),
@@ -408,5 +427,11 @@ class SellerController extends BaseController
             echo json_encode(['code' => 0, 'msg' => '异常操作']);
         }
         exit;
+    }
+
+    public function warehouseSkuToColor($sku)
+    {
+        $sku = strtoupper($sku);
+        return substr($sku, 6, 2);
     }
 }

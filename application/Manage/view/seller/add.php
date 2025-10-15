@@ -25,37 +25,10 @@
                     </select>
                 </div>
             </div>
-            <div class="layui-form-item" id="brand">
-                <label class="layui-form-label">所属品牌</label>
-                <div class="layui-input-block w300"">
-                    <select name="brand">
-                        <option value=""></option>
-                        {foreach name="brand" item="vb"}
-                        <option value="{$vb.brand_code}">{$vb.brand_name}</option>
-                        {/foreach}
-                    </select>
-                </div>
-            </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">产品颜色</label>
-                <div class="layui-input-block w300"">
-                    <select name="color">
-                        <option value=""></option>
-                        {foreach name="color" item="vc"}
-                        <option value="{$vc.color_code}">{$vc.color_code}({$vc.color_name})</option>
-                        {/foreach}
-                    </select>
-                </div>
-            </div>
-            <div class="layui-form-item" id="season" style="display: none">
-                <label class="layui-form-label">季度代码</label>
-                <div class="layui-input-block w300"">
-                    <select name="season">
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                    </select>
+                <label class="layui-form-label">仓库SKU</label>
+                <div class="layui-input-inline w300">
+                    <input type="text" class="layui-input" name="warehouse_sku">
                 </div>
             </div>
             <div class="layui-form-item">
