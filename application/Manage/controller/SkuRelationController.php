@@ -34,25 +34,9 @@ class SkuRelationController extends BaseController
         if ($keyword) {
             $skuList = array_filter(explode(" ", $keyword));
             if (count($skuList)) {
-                $whereOrArr = [];
-                foreach ($skuList as $item) {
-                    $whereOrArr[] = 'seller_sku = "' . $item . '"';
-                }
-                $whereAll = implode(' OR ', $whereOrArr);
+                $where['seller_sku'] = ['in', $skuList];
             } else {
-                $userAccountModel = new UserAccountModel();
-                $userAccount = $userAccountModel->where(['user_account' => $keyword])->find();
-                if ($userAccount) {
-                    $where['user_account'] = $userAccount['id'];
-                } else {
-                    $itemModel = new SkuRelationItemModel();
-                    $itemList = $itemModel->where(['warehouse_sku' => $keyword])->column('ss_code');
-                    if ($itemList) {
-                        $where['ss_code'] = ['in', $itemList];
-                    } else {
-                        $where['seller_sku|ss_code|wsg_code|warehouse_name|platform'] = ['like', '%' . $keyword . '%'];
-                    }
-                }
+                $where['seller_sku|ss_code|wsg_code|warehouse_name'] = ['like', '%' . $keyword . '%'];
             }
         }
         $status = $this->request->get('status', 1, 'intval');
