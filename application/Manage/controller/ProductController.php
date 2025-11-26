@@ -3,6 +3,7 @@ namespace app\Manage\controller;
 
 use app\Manage\model\AccountModel;
 use app\Manage\model\ApiClient;
+use app\Manage\model\ProductBarcodeModel;
 use app\Manage\model\ProductEditLogModel;
 use app\Manage\model\ProductModel;
 use app\Manage\model\UserModel;
@@ -252,14 +253,33 @@ class ProductController extends BaseController
                 exit();
             }
 
+            $addData = [];
+            $productBarcodeObj = new ProductBarcodeModel();
+            $warehouseAreaObj = new WarehouseAreaModel();
             $skuList = array_filter(explode("\r\n", $post['sku']));
             if ($post['is_verify']) {
                 $productModel = new ProductModel();
                 $noSku = [];
+                $jsonString = [];
                 foreach ($skuList as $item) {
                     $product = $productModel->where(['productSku' => $item])->find();
                     if (empty($product)) {
                         $noSku[] = $item;
+                    }
+
+                    $setBarcodeList = $productBarcodeObj->where(['product_barcode' => $item])->column('warehouse_code');
+                    $areList = $warehouseAreaObj->column('warehouse_code');
+                    foreach ($areList as $value) {
+                        if (!in_array($value, $setBarcodeList)) {
+                            $areaData = WarehouseAreaModel::get(['warehouse_code' => $value])->toArray();
+                            $jsonString[] = '{"product_barcode":"' . $item . '","warehouse_product_barcode":"' . $item . '","barcode":"' . $item . '","warehouse_id":' . $areaData['warehouse_id'] . '}';
+                            $addData[] = [
+                                'product_barcode'           =>  $item,
+                                'warehouse_product_barcode' =>  $item,
+                                'barcode'                   =>  $item,
+                                'warehouse_code'            =>  $value
+                            ];
+                        }
                     }
                 }
                 if ($noSku) {
@@ -268,41 +288,17 @@ class ProductController extends BaseController
                 }
             }
 
-            $warehouseNewId = [];
-            $warehouseBarcode = WarehouseAreaModel::all();
-            foreach ($skuList as $sku) {
-                $jsonString = '
-{
-    "warehouse_code":["' . implode('","', array_column($warehouseBarcode->toArray(), 'warehouse_code')) . '"],
-    "product_barcode":"' . $sku . '",
-    "pageSize":1000,
-    "page":1
-}  
-                ';
-                $rest = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "getProductBarcodeMapList", $jsonString);
-                if ($rest['code'] == 1) {
-                    foreach ($post['warehouse_code'] as $warehouseId) {
-                        $warehouseArea = WarehouseAreaModel::where(['warehouse_id' => $warehouseId])->find();
-                        $sum = 0;
-                        foreach ($rest['data'] as $datum) {
-                            if ($datum['warehouse_code'] == $warehouseArea['warehouse_code']) {
-                                $sum ++;
-                                break;
-                            }
-                        }
-                        if ($sum == 0) {
-                            $warehouseNewId[] = '{"product_barcode":"' . $sku . '","warehouse_product_barcode":"' . $sku . '","barcode":"' . $sku . '","warehouse_id":' . $warehouseId . '}';
-                        }
-                    }
-                }
-            }
-
-            if (!empty($warehouseNewId)) {
-                $jsonString2 = '{"data":[' . implode(',', $warehouseNewId) . ']}';
+            if (!empty($jsonString)) {
+                $jsonString2 = '{"data":[' . implode(',', $jsonString) . ']}';
                 $rest2 = ApiClient::EcWarehouseApi(Config::get("ec_wms_uri"), "batchAddProductBarCodeMap", $jsonString2);
                 if ($rest2['code'] == 1) {
-                    echo json_encode(['code' => 1, 'msg' => '操作成功']);
-                    exit();
+                    if ($productBarcodeObj->insertAll($addData)) {
+                        echo json_encode(['code' => 1, 'msg' => '操作成功']);
+                        exit();
+                    } else {
+                        echo json_encode(['code' => 0, 'msg' => '操作失败，请重试']);
+                        exit();
+                    }
                 } else {
                     echo json_encode(['code' => 0, 'msg' => '操作失败，请重试']);
                     exit();
