@@ -12,4 +12,5 @@
 return [
     'app\Manage\command\ProductUpdate', // * * * * *
     'app\Manage\command\UserUpdate', //
+    'app\Manage\command\ProductBarcodeUpdate', //
 ];
