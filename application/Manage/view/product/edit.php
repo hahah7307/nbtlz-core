@@ -7,18 +7,20 @@
         <div class="title">编辑产品</div>
 		<div class="layui-form">
             <div class="layui-form-item">
-                <label class="layui-form-label">运营人员</label>
+                <label class="layui-form-label">姓名</label>
                 <div class="layui-input-inline w300">
                     <input type="text" class="layui-input" name="user_name">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">编辑类型</label>
+                <label class="layui-form-label">类型</label>
                 <div class="layui-input-inline w300">
                     <select name="type" lay-verify="">
                         <option value="1">新增附属销售</option>
                         <option value="2">移出附属销售</option>
                         <option value="3">编辑主销售</option>
+                        <option value="4">编辑主采购</option>
+                        <option value="5">编辑主开发</option>
                     </select>
                 </div>
             </div>
