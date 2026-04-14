@@ -398,9 +398,11 @@ class SkuRelationController extends BaseController
                     // 新建待审核
                     if ($skuRelationModel->allowField(true)->update(['id' => $skuRelation['id'], 'status' => 1])) {
                         if ($skuRelationItemModel->allowField(true)->where(['ss_code' => $ssCode, 'wsg_code' => $post['wsg_code']])->update(['status' => 1, 'updated_time' => date('Y-m-d H:i:s')])) {
-                            $res = self::sendSkuRelationRequest($skuRelation, $post['wsg_code']);
-                            if (empty($res['code'])) {
-                                throw new Exception($res['data']);
+                            if ($skuRelation['real'] == 1) {
+                                $res = self::sendSkuRelationRequest($skuRelation, $post['wsg_code']);
+                                if (empty($res['code'])) {
+                                    throw new Exception($res['data']);
+                                }
                             }
 
                             // 审核记录

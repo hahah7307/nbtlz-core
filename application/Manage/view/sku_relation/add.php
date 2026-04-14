@@ -58,6 +58,13 @@
                 </div>
             </div>
             <div class="layui-form-item">
+                <label class="layui-form-label">内部使用</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="real" value="0" title="是">
+                    <input type="radio" name="real" value="1" title="否" checked>
+                </div>
+            </div>
+            <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn w200" lay-submit lay-filter="formCoding">提交保存</button>
                 </div>
