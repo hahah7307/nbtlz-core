@@ -92,12 +92,15 @@ class ApiClient extends Model
         // 设置请求头
         $header = [
             'Content-Type: application/json',
-            'accessKey: ' . $params['accessKey'],
-            'timestamp: ' . $params['timestamp'],
             'sign: ' . self::params2sign($params, Config::get('le_secret_key'))
         ];
+        if (isset($params['accessKey'])) {
+            $header[] = 'accessKey: ' . $params['accessKey'];
+        }
+        if (isset($params['timestamp'])) {
+            $header[] = 'timestamp: ' . $params['timestamp'];
+        }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);

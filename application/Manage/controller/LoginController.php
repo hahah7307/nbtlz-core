@@ -38,15 +38,15 @@ class LoginController extends Controller
             $account = Db::name('admin_user')->where(['username' => $post['username'], 'status' => AccountModel::STATUS_ACTIVE])->find();
             if ($account) {
                 if (encPass($post['password'], $account['password_hash']) == $account['password']) {
-                    if (empty($account['mac_token'])) {
-                        $macToken = encToken($account['username']);
-                        AccountModel::update(['id' => $account['id'], 'mac_token' => $macToken]);
-                        Cookie::set(Config::get('USER_MAC_TOKEN'), $macToken, Config::get('COOKIE_EXPIRED_TIME'));
-                    } else {
-                        if ($macToken != $account['mac_token']) {
-                            return json(['code' => 0, 'msg' => '请使用被允许的设备登录此账号！']);
-                        }
-                    }
+//                    if (empty($account['mac_token'])) {
+//                        $macToken = encToken($account['username']);
+//                        AccountModel::update(['id' => $account['id'], 'mac_token' => $macToken]);
+//                        Cookie::set(Config::get('USER_MAC_TOKEN'), $macToken, Config::get('COOKIE_EXPIRED_TIME'));
+//                    } else {
+//                        if ($macToken != $account['mac_token']) {
+//                            return json(['code' => 0, 'msg' => '请使用被允许的设备登录此账号！']);
+//                        }
+//                    }
                     Session::set(Config::get('USER_LOGIN_FLAG'), $account['id']);
                     Session::set(Config::get('USER_LOGIN_TIME'), time());
 

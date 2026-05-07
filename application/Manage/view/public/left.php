@@ -48,6 +48,15 @@
                     </dl>
                 </li>
                 <li data-name="SkuRelation" class="layui-nav-item">
+                    <a layui-href="javascript:;" lay-tips="补货" lay-direction="2">
+                        <i class="layui-icon iconfont icon-xiaoshoue"></i>
+                        <cite>补货</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a layui-href="{:url('Replenish/index')}">补货列表</a></dd>
+                    </dl>
+                </li>
+                <li data-name="SkuRelation" class="layui-nav-item">
                     <a layui-href="javascript:;" lay-tips="产品" lay-direction="2">
                         <i class="layui-icon iconfont icon-chanpin1"></i>
                         <cite>产品</cite>
