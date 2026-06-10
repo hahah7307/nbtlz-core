@@ -45,6 +45,7 @@
                         <dd><a layui-href="{:url('Echarts/index')}">美国各州销量热力图</a></dd>
                         <dd><a layui-href="{:url('Seller/index')}">平台货号</a></dd>
                         <dd><a layui-href="{:url('Order/save')}">订单留存</a></dd>
+                        <dd><a layui-href="{:url('Warehouse/store')}">海外仓库存</a></dd>
                     </dl>
                 </li>
                 <li data-name="SkuRelation" class="layui-nav-item">

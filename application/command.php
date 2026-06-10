@@ -13,4 +13,7 @@ return [
     'app\Manage\command\ProductUpdate', // * * * * *
     'app\Manage\command\UserUpdate', //
     'app\Manage\command\ProductBarcodeUpdate', //
+    'app\Manage\command\LeInventoryBatch', //
+    'app\Manage\command\LcInventoryBatch', // 自动抓取良仓当日批次库存 * * * * *
+    'app\Manage\command\WydInventoryBatch', //
 ];
