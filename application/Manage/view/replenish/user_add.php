@@ -1,6 +1,11 @@
 
 {include file="public/header" /}
 
+<style>
+    .layui-table, .layui-table-view {
+        margin: 10px 32px;
+    }
+</style>
 <div class="layui-body">
 <div class="right">
     <a href="{:session('manage.back_url')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
@@ -11,11 +16,9 @@
                 <label class="layui-form-label">所属平台</label>
                 <div class="layui-input-block w300"">
                 <select name=platform lay-filter="user_account">
-                    <option value="amazon">amazon</option>
-                    <option value="wayfair">wayfair</option>
-                    <option value="walmart">walmart</option>
-                    <option value="temu">temu</option>
-                    <option value="tiktok">tiktok</option>
+                    {foreach name="platform" item="plat"}
+                    <option value="{$plat}">{$plat}</option>
+                    {/foreach}
                 </select>
             </div>
         </div>

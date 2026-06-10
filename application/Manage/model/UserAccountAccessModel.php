@@ -14,4 +14,9 @@ class UserAccountAccessModel extends Model
     {
         return $this->hasOne('AccountModel', 'id', 'admin_user_id');
     }
+
+    public function userAccount(): \think\model\relation\HasMany
+    {
+        return $this->hasMany('UserAccountModel', 'id', 'user_account_id');
+    }
 }

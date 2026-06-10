@@ -29,21 +29,19 @@
                     <col>
                     <col>
                     <col>
-                    <col>
-                    <col>
                     <col class="w180">
+                    <col>
                     <col class="w100">
                     <col class="w180">
                 </colgroup>
                 <thead>
                 <tr>
                     <th class="tl">标题</th>
+                    <th class="tc">产品图片</th>
                     <th class="tc">仓库SKU</th>
-                    <th class="tc">开始日期</th>
-                    <th class="tc">结束日期</th>
-                    <th class="tc">预估补货合计</th>
-                    <th class="tc">创建人</th>
+                    <th class="tc">补货至</th>
                     <th class="tc">创建时间</th>
+                    <th class="tc">创建人</th>
                     <th class="tc">状态</th>
                     <th class="tc">操作</th>
                 </tr>
@@ -52,19 +50,29 @@
                 {foreach name="list" item="v"}
                 <tr>
                     <td class="tl">{$v.plan_title}</td>
+                    <td class="tc"><a href="{:getImgUrlByWarehouseSku($v['warehouse_sku'])}" target="_blank"><img src="{:getImgUrlByWarehouseSku($v['warehouse_sku'])}" alt=""></a></td>
                     <td class="tc">{$v.warehouse_sku}</td>
-                    <td class="tc">{$v.start_date|strtotime|date="Y-m-d",###}</td>
-                    <td class="tc">{$v.end_date|strtotime|date="Y-m-d",###}</td>
-                    <td class="tc">{$v.amount}</td>
-                    <td class="tc">{$v.admin_user.nickname}</td>
+                    <td class="tc">{:date('Y-m', strtotime($v['end_date'] . '01'))}</td>
                     <td class="tc">{$v.create_time}</td>
-                    <td class="tc">{if condition="$v.status eq 1"}<span class="green">已结存</span>{else/}<span class="blue">进行中</span>{/if}</td>
+                    <td class="tc">{$v.admin_user.nickname}</td>
+                    <td class="tc">
+                        {if condition="$v.status eq 1"}
+                            <span class="green">已提交</span>
+                        {elseif condition="$v.status eq 2"/}
+                            <span class="orange">已废弃</span>
+                        {else/}
+                            <span class="blue">进行中</span>
+                        {/if}
+                    </td>
                     <td class="tc">
                         <a href="{:url('user_list', ['id' => $v.id])}" class="layui-btn layui-btn-sm">列表</a>
                         {if condition="in_array('Replenish', $role)"}
-                        <button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-normal ml0" lay-submit lay-filter="Balance">合并</button>
+                        <a href="{:url('detail', ['id' => $v.id])}" class="layui-btn layui-btn-sm">详情</a>
+                        <button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-normal ml0" lay-submit lay-filter="Deprecated">废弃</button>
                         {/if}
+                        {if condition="$user.super eq 1"}
                         <button data-id="{$v.id}" class="layui-btn layui-btn-sm layui-btn-danger ml0" lay-submit lay-filter="Delete">删除</button>
+                        {/if}
                     </td>
                 </tr>
                 {/foreach}
@@ -104,16 +112,16 @@
             return false;
         });
 
-        // 结存
-        form.on('submit(Balance)', function(data){
+        // 废弃
+        form.on('submit(Deprecated)', function(data){
             const text = $(this).text(),
                 button = $(this),
                 id = $(this).data('id');
-            layer.confirm('确定结存吗？',{icon:3,closeBtn:0,title:false,btnAlign:'c'},function(){
+            layer.confirm('确定废弃吗？',{icon:3,closeBtn:0,title:false,btnAlign:'c'},function(){
                 $('button').attr('disabled',true);
                 button.text('请稍候...');
                 $.ajax({
-                    type:'POST',url:"{:url('balance')}",data:{id:id},dataType:'json',
+                    type:'POST',url:"{:url('deprecated')}",data:{id:id},dataType:'json',
                     success:function(data){
                         if(data.code === 1){
                             layer.alert(data.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c'},function(){

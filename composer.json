@@ -20,7 +20,8 @@
         "topthink/framework": "5.0.*",
       "ext-json": "*",
       "ext-soap": "*",
-      "ext-curl": "*"
+      "ext-curl": "*",
+      "ext-openssl": "*"
     },
     "autoload": {
         "psr-4": {

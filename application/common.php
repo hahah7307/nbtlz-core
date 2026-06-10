@@ -227,3 +227,27 @@ function getWarehouse()
 {
     return \app\Manage\model\WarehouseModel::all(['state' => \app\Manage\model\WarehouseModel::STATE_ACTIVE]);
 }
+
+/**
+ * @throws DbException
+ * @throws \think\db\exception\ModelNotFoundException
+ * @throws \think\db\exception\DataNotFoundException
+ */
+function getImgUrlByWarehouseSku($sku)
+{
+    $model = new \app\Manage\model\ProductModel();
+    $product = $model->where(['productSku' => $sku])->find();
+    return $product['productImages'];
+}
+
+/**
+ * @throws DbException
+ * @throws \think\db\exception\ModelNotFoundException
+ * @throws \think\db\exception\DataNotFoundException
+ */
+function getProductTitleByWarehouseSku($sku)
+{
+    $model = new \app\Manage\model\ProductModel();
+    $product = $model->where(['productSku' => $sku])->find();
+    return $product['productTitle'];
+}

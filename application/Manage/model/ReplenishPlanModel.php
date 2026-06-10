@@ -18,4 +18,9 @@ class ReplenishPlanModel extends Model
     {
         return $this->hasOne('AccountModel', 'id', 'create_id');
     }
+
+    public function planDetail(): \think\model\relation\HasMany
+    {
+        return $this->hasMany('ReplenishPlanDetailModel', 'plan_id', 'id')->order('platform asc');
+    }
 }

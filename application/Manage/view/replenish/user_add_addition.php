@@ -70,7 +70,6 @@ layui.use(['form', 'jquery', 'laydate'], function() {
                 let res = response.data;
                 if (res.code === 1) {
                     layer.alert(res.msg,{icon:1,closeBtn:0,title:false,btnAlign:'c',},function(){
-                        location.reload();
                         location.href = "{:session('manage.back_url')}";
                     });
                 } else {
