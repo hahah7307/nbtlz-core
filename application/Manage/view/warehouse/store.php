@@ -17,6 +17,11 @@
             <div class="layui-inline">
                 <button class="layui-btn" lay-submit lay-filter="Search"><i class="layui-icon">&#xe615;</i> 查询</button>
             </div>
+            {if condition="$user.super eq 1"}
+            <div class="layui-inline">
+                <a class="layui-btn" href="{:url('reviewed')}">已查看</a>
+            </div>
+            {/if}
         </form>
 
         <div class="layui-form pie-chart" style="display: flex">

@@ -4,6 +4,7 @@ namespace app\Manage\controller;
 use app\Manage\model\AccountModel;
 use app\Manage\model\ProductModel;
 use app\Manage\model\UserModel;
+use app\Manage\model\WarehouseInventoryReviewModel;
 use app\Manage\model\WarehouseModel;
 use app\Manage\validate\WarehouseValidate;
 use http\Client\Curl\User;
@@ -275,6 +276,15 @@ ORDER BY
         }
         $this->assign('storeData', json_encode($storeData));
 
+        $reviewData = [
+            'user_id'       =>  Session::get(Config::get('USER_LOGIN_FLAG')),
+            'review_url'    =>  $this->request->url(),
+            'created_date'  =>  date('Ymd'),
+            'created_time'  =>  date('Y-m-d H:i:s')
+        ];
+        $reviewModel = new WarehouseInventoryReviewModel();
+        $reviewModel->insert($reviewData);
+
         Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');
         return view();
     }
@@ -421,6 +431,36 @@ GROUP BY
 	productTitle 
 ORDER BY
 	num DESC;
+        ');
+        $this->assign('list', $list);
+
+        return view();
+    }
+
+    /**
+     * @throws PDOException
+     * @throws BindParamException
+     */
+    public function reviewed(): \think\response\View
+    {
+        $sale_day = $this->request->get('sale_day', date('Y-m-d'), 'htmlspecialchars');
+        $this->assign('sale_day', $sale_day);
+        $sale_day_num = date('Ymd', strtotime($sale_day));
+
+        $model = new ProductModel();
+        $list = $model->query('
+SELECT
+	MAX( a.created_time ) created_time,
+	b.nickname,
+	a.created_date 
+FROM
+	nbtlz_warehouse_inventory_review a
+	LEFT JOIN nbtlz_admin_user b ON a.user_id = b.id 
+WHERE
+	a.created_date = ' . $sale_day_num . ' 
+GROUP BY
+	nickname,
+	created_date
         ');
         $this->assign('list', $list);
 

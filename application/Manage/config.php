@@ -73,4 +73,33 @@ return [
     'ec_eb_uri'                 =>  'http://nt5e7hf-eb.eccang.com/default/svc-open/web-service-v2',
     'ec_warehouse_username'     =>  'HQJL',
     'ec_warehouse_userpass'     =>  'WBBwala361@16',
+
+
+    // 不同仓库抓取订单时间
+    'INVENTORY_BATCH_TIME'  => [
+        'LC-CANG'       =>  0,
+        'CAP2'          =>  16,
+        'LG-USA-PA01'   =>  13,
+    ],
+
+    'WAREHOUSE_ID' => [
+        24  =>  'CAP2',
+        26  =>  'CAP4',
+        28  =>  'LC-USATL06',
+        29  =>  'LC-USLAX08',
+        32  =>  'USLAX09',
+        33  =>  'LG-TN',
+        34  =>  'LC-USLAX05',
+        36  =>  'LC-USNJ06',
+        37  =>  'LG-USA-PA01'
+    ],
+
+    'EC_WAREHOUSE_TIME' => [
+        'LC-USLAX08'    =>  2,
+        'LC-USNJ06'     =>  2,
+        'USLAX09'       =>  2,
+        'LC-USATL06'    =>  2,
+        'CAP2'          =>  16,
+        'LG-USA-PA01'   =>  13,
+    ],
 ];
