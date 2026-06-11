@@ -16,7 +16,7 @@
 <div class="layui-body" id="LAY_app_body">
     <div class="right">
         <a href="{:session('back_url', '', 'manage')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
-        <div class="title">{$date|strtotime|date="Y-m-d", ###}库龄 {$numStart}-{$num}天海外仓库存<strong>(不包含RETURN、ACCESSORY)</strong></div>
+        <div class="title">{$date|strtotime|date="Y-m-d", ###}库龄 <strong>{$numStart}-{$num}</strong>天海外仓库存<strong>(不包含RETURN、ACCESSORY)</strong></div>
 
         <div class="layui-form table-flex">
             <table class="layui-table" lay-size="sm">
