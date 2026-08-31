@@ -68,6 +68,15 @@
                         <dd><a layui-href="{:url('Product/warehouse_barcode')}">海外仓编码</a></dd>
                     </dl>
                 </li>
+                <li data-name="SkuRelation" class="layui-nav-item">
+                    <a layui-href="javascript:;" lay-tips="其他" lay-direction="2">
+                        <i class="layui-icon iconfont icon-chanpin1"></i>
+                        <cite>其他</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a layui-href="{:url('Video/product_install')}">安装视频</a></dd>
+                    </dl>
+                </li>
                 {if condition="$user.super eq 1"}
                 <li data-name="Storage" class="layui-nav-item">
                     <a layui-href="javascript:;" lay-tips="仓库" lay-direction="2">

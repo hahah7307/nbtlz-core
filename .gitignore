@@ -2,3 +2,5 @@
 runtime/*
 public/static/*
 /application/storage.php
+/application/config.php
+/application/Manage/config.php
