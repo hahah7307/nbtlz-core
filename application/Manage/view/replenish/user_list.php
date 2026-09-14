@@ -33,6 +33,11 @@
         font-size: 16px;
     }
 
+    .value-actual {
+        color: #333;
+        font-size: 12px;
+    }
+
     .bg-pink {
         background-color: #FFE4EC;
     }
@@ -55,7 +60,7 @@
 <!-- 主体内容 -->
 <div class="layui-body" id="LAY_app_body">
     <div class="right">
-        <a href="{:url('Replenish/index')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
+        <a href="{:session('back_url', '', 'manage')}" class="layui-btn layui-btn-danger layui-btn-sm fr"><i class="layui-icon">&#xe603;</i>返回上一页</a>
         <div class="title">列表(<span class="red">*只能启用一个，启用时其他项会默认禁用</span>)</div>
 
         <div class="layui-form">
@@ -79,8 +84,8 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th class="tc">工厂下单未包数</th>
-                    <th class="tc">工厂待出</th>
+                    <th class="tc">已下单未做</th>
+                    <th class="tc">已完成待出</th>
                     <th class="tc">海上在途</th>
                     <th class="tc">海外仓库存</th>
                     <th class="tc">账面总库存</th>
@@ -143,6 +148,9 @@
                             <div class="grid-item">
                                 <div class="key">{$k}</div>
                                 <div class="value">{$item}</div>
+                                {if condition="isset($actual_list[$v[id]][$k])"}
+                                <div class="value-actual {if condition='$actual_list[$v[id]][$k] lt $item'}red{/if}">实际：{:round($actual_list[$v[id]][$k],2)}（{:round(abs(($item-$actual_list[$v[id]][$k])/$item),4)*100}%）</div>
+                                {/if}
                             </div>
                         {/foreach}
                         </div>

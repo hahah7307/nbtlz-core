@@ -7,7 +7,6 @@ use app\Manage\model\ProductModel;
 use app\Manage\model\ReplenishPlanDetailModel;
 use app\Manage\model\ReplenishPlanModel;
 use app\Manage\model\ReplenishPlanUserModel;
-use app\Manage\model\UserAccountAccessModel;
 use app\Manage\model\UserAccountModel;
 use DateTime;
 use think\Db;
@@ -55,6 +54,7 @@ class ReplenishController extends BaseController
     {
         if ($this->request->isPost()) {
             $post = $this->request->post();
+            $post['warehouse_sku'] = strtoupper($post['warehouse_sku']);
             if (empty($post['warehouse_sku'])) {
                 echo json_encode(['code' => 0, 'msg' => '仓库SKU不能为空']);
                 exit;
@@ -79,11 +79,10 @@ class ReplenishController extends BaseController
             $model = new ReplenishPlanModel();
             if ($model->allowField(true)->save($post)) {
                 echo json_encode(['code' => 1, 'msg' => '提交成功']);
-                exit;
             } else {
                 echo json_encode(['code' => 0, 'msg' => '提交失败，请重试']);
-                exit;
             }
+            exit;
         } else {
 
             return view();
@@ -108,7 +107,7 @@ class ReplenishController extends BaseController
         $plan = ReplenishPlanModel::get($id);
         $this->assign('plan', $plan);
         if ($plan['status'] == 1) {
-            $postParam = ['sale_start' => date('Y-m-d', strtotime($plan['start_date'])), 'sale_end' => date('Y-m-d', strtotime($plan['end_date'])), 'sku' => $plan['warehouse_sku']];
+            $postParam = ['sale_start' => date('Y-m-d', strtotime($plan['create_time'])), 'sale_end' => date('Y-m-t', strtotime($plan['end_date'] . '01')), 'sku' => $plan['warehouse_sku']];
             $actualList = ApiClient::httpCurl("http://139.224.106.228/Home/Api/getSkuDailySales", "POST", $postParam);
             $actualListRes = json_decode($actualList, true);
             if ($actualListRes['code'] == 200) {
@@ -179,23 +178,19 @@ class ReplenishController extends BaseController
         $this->assign('lcStore', $lcdStore);
         $this->assign('lcOnWay', $lcOnWay);
 
-        Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');
         return view();
     }
 
     /**
      * @throws DbException
      * @throws Exception
-     * @throws \SoapFault
      */
     public function detail($id): \think\response\View
     {
         $model = new ReplenishPlanModel();
         $plan = $model->with(['plan_detail.user'])->where(['id' => $id])->find();
-//        dump($plan->toArray());exit();
         $this->assign('plan', $plan);
 
-        Session::set(Config::get('BACK_URL'), $this->request->url(), 'manage');
         return view();
     }
 
